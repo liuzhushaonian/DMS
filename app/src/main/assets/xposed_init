@@ -1,1 +1,2 @@
-com.app.legend.dms.hooks.CartoonDescriptionHook
+com.app.legend.dms.hooks.HookLoader
+com.app.legend.dms.hooks.HttpHostHook
