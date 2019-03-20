@@ -11,13 +11,12 @@ import java.util.List;
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
  * from https://github.com/shuihuadx/XposedHook
- *
+ * 测试使用
  * 3Q
  */
 
@@ -63,16 +62,21 @@ public class HookLoader implements IXposedHookLoadPackage {
     static {
         // TODO: Add the package name of application your want to hook!
         hostAppPackages.add("com.dmzj.manhua");
-        init(LauncherActivityHook.class.getName());
-        init(CartoonDescriptionHook.class.getName());
-        init(CartoonFilterHook.class.getName());
+
+        init(CartoonInstructionActivityHook.class.getName());
+
+        init(SplashAdHook.class.getName());
+
+        init(MainSceneCartoonActivityHook.class.getName());
+        init(HideFragmentHook.class.getName());
 //        init();
+
+//        addConstruct(HttpHostHook.class.getName());
     }
 
     /**
      * 实际hook逻辑处理类
      */
-    private final String handleHookClass = LauncherActivityHook.class.getName();
 
 
     /**
@@ -92,10 +96,17 @@ public class HookLoader implements IXposedHookLoadPackage {
                     Context context=(Context) param.args[0];
                     loadPackageParam.classLoader = context.getClassLoader();
 
+                    //普通的hook方法的
                     for (String handleHookClass:handleHookClasses) {
 
                         invokeHandleHookMethod(context, modulePackage, handleHookClass, handleHookMethod, loadPackageParam);
                     }
+
+                    //hook构造方法的
+//                    for (String s:findAndHookConstructorList){
+//
+//                        invokeHandleHookMethod(context, modulePackage,s, handelConstructorMethod, loadPackageParam);
+//                    }
 
                 }
             });
