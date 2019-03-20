@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn com.squareup.okhttp3.**
+-keep class com.squareup.okhttp3.* { ;}
+-dontwarn okio.**
+
+-keep class * implements de.robv.android.xposed.IXposedHookLoadPackage { *; }
+-keep class * implements android.os.Parcelable { *; }

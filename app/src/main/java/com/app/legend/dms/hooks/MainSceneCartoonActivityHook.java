@@ -2,23 +2,12 @@ package com.app.legend.dms.hooks;
 
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import com.app.legend.dms.R;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
-import com.app.legend.dms.utils.NetUtil;
-
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;

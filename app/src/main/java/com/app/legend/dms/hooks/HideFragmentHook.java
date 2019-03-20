@@ -3,11 +3,9 @@ package com.app.legend.dms.hooks;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+
 import android.support.annotation.WorkerThread;
-import android.support.v4.app.Fragment;
+
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,11 +22,11 @@ import com.app.legend.dms.utils.JsonUtil;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
+
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+
 import java.util.List;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;

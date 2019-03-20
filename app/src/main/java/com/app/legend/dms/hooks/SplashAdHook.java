@@ -3,7 +3,6 @@ package com.app.legend.dms.hooks;
 import java.lang.reflect.Method;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodReplacement;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -28,67 +27,7 @@ public class SplashAdHook extends BaseHook implements IXposedHookLoadPackage {
             return;
         }
 
-//        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, METHOD1, new XC_MethodReplacement() {
-//            @Override
-//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//
-//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
-//
-//                Method a=c.getDeclaredMethod("a");
-//
-//                Object o=a.invoke(null);//运行a静态方法，获取实例
-//
-//                Method method = c.getDeclaredMethod("b", int.class, String.class);
-//                method.invoke(o, -1, "Inter onADClosed");
-//
-//
-//
-//
-//                return null;
-//            }
-//        });
-//
-//        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, METHOD2, new XC_MethodReplacement() {
-//            @Override
-//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//
-//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
-//
-//                Method a=c.getDeclaredMethod("a");
-//
-//                Object o=a.invoke(null);//运行a静态方法，获取实例
-//
-//                Method method = c.getDeclaredMethod("b", int.class, String.class);
-//                method.invoke(o, -1, "Inter onADClosed");
-//
-//
-//
-//                return null;
-//            }
-//        });
-//
-//
-//        XposedHelpers.findAndHookMethod("com.lt.adv.b.a", lpparam.classLoader, "e", new XC_MethodReplacement() {
-//            @Override
-//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//
-//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
-//
-//                Method a=c.getDeclaredMethod("a");
-//
-//                Object o=a.invoke(null);//运行a静态方法，获取实例
-//
-//                Method method = c.getDeclaredMethod("b", int.class, String.class);
-//                method.invoke(o, -1, "Inter onADClosed");
-//
-//
-//
-//
-//                return null;
-//            }
-//        });
-
-        XposedHelpers.findAndHookConstructor(CLASS, lpparam.classLoader, new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, METHOD1, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
@@ -101,9 +40,84 @@ public class SplashAdHook extends BaseHook implements IXposedHookLoadPackage {
                 Method method = c.getDeclaredMethod("b", int.class, String.class);
                 method.invoke(o, -1, "Inter onADClosed");
 
+
+
+
                 return null;
             }
         });
+
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, METHOD2, new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+
+                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
+
+                Method a=c.getDeclaredMethod("a");
+
+                Object o=a.invoke(null);//运行a静态方法，获取实例
+
+                Method method = c.getDeclaredMethod("b", int.class, String.class);
+                method.invoke(o, -1, "Inter onADClosed");
+
+
+
+                return null;
+            }
+        });
+
+
+        XposedHelpers.findAndHookMethod("com.lt.adv.b.a", lpparam.classLoader, "e", new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+
+                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
+
+                Method a=c.getDeclaredMethod("a");
+
+                Object o=a.invoke(null);//运行a静态方法，获取实例
+
+                Method method = c.getDeclaredMethod("b", int.class, String.class);
+                method.invoke(o, -1, "Inter onADClosed");
+
+
+                return null;
+            }
+        });
+
+//        XposedHelpers.findAndHookConstructor(CLASS, lpparam.classLoader, new XC_MethodReplacement() {
+//            @Override
+//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//
+//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
+//
+//                Method a=c.getDeclaredMethod("a");
+//
+//                Object o=a.invoke(null);//运行a静态方法，获取实例
+//
+//                Method method = c.getDeclaredMethod("b", int.class, String.class);
+//                method.invoke(o, -1, "Inter onADClosed");
+//
+//                return null;
+//            }
+//        });
+//
+//        XposedHelpers.findAndHookConstructor("com.lt.adv.b.a", lpparam.classLoader, new XC_MethodReplacement() {
+//            @Override
+//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//
+//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
+//
+//                Method a=c.getDeclaredMethod("a");
+//
+//                Object o=a.invoke(null);//运行a静态方法，获取实例
+//
+//                Method method = c.getDeclaredMethod("b", int.class, String.class);
+//                method.invoke(o, -1, "Inter onADClosed");
+//
+//                return null;
+//            }
+//        });
 
 
     }
