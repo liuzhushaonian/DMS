@@ -85,40 +85,6 @@ public class SplashAdHook extends BaseHook implements IXposedHookLoadPackage {
             }
         });
 
-//        XposedHelpers.findAndHookConstructor(CLASS, lpparam.classLoader, new XC_MethodReplacement() {
-//            @Override
-//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//
-//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
-//
-//                Method a=c.getDeclaredMethod("a");
-//
-//                Object o=a.invoke(null);//运行a静态方法，获取实例
-//
-//                Method method = c.getDeclaredMethod("b", int.class, String.class);
-//                method.invoke(o, -1, "Inter onADClosed");
-//
-//                return null;
-//            }
-//        });
-//
-//        XposedHelpers.findAndHookConstructor("com.lt.adv.b.a", lpparam.classLoader, new XC_MethodReplacement() {
-//            @Override
-//            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-//
-//                Class<?> c = lpparam.classLoader.loadClass(CLASS2);
-//
-//                Method a=c.getDeclaredMethod("a");
-//
-//                Object o=a.invoke(null);//运行a静态方法，获取实例
-//
-//                Method method = c.getDeclaredMethod("b", int.class, String.class);
-//                method.invoke(o, -1, "Inter onADClosed");
-//
-//                return null;
-//            }
-//        });
-
 
     }
 
