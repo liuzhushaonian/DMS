@@ -60,8 +60,6 @@ public class SplashAdHook extends BaseHook implements IXposedHookLoadPackage {
                 Method method = c.getDeclaredMethod("b", int.class, String.class);
                 method.invoke(o, -1, "Inter onADClosed");
 
-
-
                 return null;
             }
         });

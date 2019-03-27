@@ -1,5 +1,6 @@
 package com.app.legend.dms.adapter;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +16,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
 
 
     List<HideComic> hideComicList;
-    private static final String DEFAULT_IMAGE="https://ws1.sinaimg.cn/large/c13993a9gy1g180fo10xtj20qn12w44m.jpg";
+    private static final String DEFAULT_IMAGE="https://ws1.sinaimg.cn/large/c13993a9ly1g1hqobmwurj208w0bwmxy.jpg";
 
     private HideItemOnClickListener listener;
 
@@ -31,6 +33,21 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
 
     public void setHideComicList(List<HideComic> hideComicList) {
         this.hideComicList = hideComicList;
+        this.showList=new ArrayList<>();
+
+        showList.addAll(hideComicList);
+
+        notifyDataSetChanged();
+    }
+
+    private List<HideComic> showList;
+
+
+    public void setShowList(List<HideComic> showList) {
+        this.showList = new ArrayList<>();
+
+        this.showList.addAll(showList);
+
         notifyDataSetChanged();
     }
 
@@ -45,10 +62,10 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
         viewHolder.view.setOnClickListener(v -> {
 
             /*点击事件，交给外部处理*/
-            if (this.listener!=null&&hideComicList!=null){
+            if (this.listener!=null&&showList!=null){
 
                 int position=viewHolder.getAdapterPosition();
-                HideComic comic=hideComicList.get(position);
+                HideComic comic=showList.get(position);
                 listener.itemClick(comic);//
 
             }
@@ -61,18 +78,18 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         super.onBindViewHolder(viewHolder, i);
-        if (this.hideComicList==null){
+        if (this.showList==null){
             return;
         }
 
-        HideComic comic=this.hideComicList.get(i);
+        HideComic comic=this.showList.get(i);
         viewHolder.title.setText(comic.getTitle());
         viewHolder.author.setText("作者："+comic.getAuthor());
 
         String book=comic.getBookLink();
 
         if (book==null||book.isEmpty()){
-            book="https://images.dmzj.com/webpic/5/zhuanshengeyizhihaobachupomieqibiao21658l.jpg";
+            book=DEFAULT_IMAGE;
         }
 
         GlideUrl glideUrl=new GlideUrl(book,new LazyHeaders.Builder().addHeader("Referer","http://images.dmzj.com/").build());
@@ -86,12 +103,70 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
 
-        if (this.hideComicList!=null){
-            return hideComicList.size();
+        if (this.showList!=null){
+            return showList.size();
         }
 
         return super.getItemCount();
     }
+
+
+    /**
+     * 查询漫画
+     * @param s 查询关键字
+     * @param activity Activity用于在主线程显示
+     */
+    public void query(String s, Activity activity){
+
+        if (hideComicList==null){
+            return;
+        }
+
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+
+                queryData(s,activity);
+
+            }
+        }.start();
+
+
+
+
+    }
+
+    private void queryData(String s,Activity activity){
+
+        List<HideComic> showList=new ArrayList<>();
+
+        for (HideComic comic:hideComicList){
+
+            if (comic.getAuthor().contains(s)||comic.getTitle().contains(s)){
+
+                showList.add(comic);
+
+            }
+
+        }
+
+        Runnable runnable= () -> {
+
+            setShowList(showList);
+
+        };
+
+        activity.runOnUiThread(runnable);
+
+    }
+
+    public void resume(){
+
+        setShowList(hideComicList);
+
+    }
+
 
     static class ViewHolder extends BaseAdapter.ViewHolder{
 

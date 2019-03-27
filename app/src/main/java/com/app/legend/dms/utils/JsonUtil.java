@@ -71,8 +71,6 @@ public class JsonUtil {
                     result.add(object.getString("dmId"));
 
                 }
-
-
             }
 
         } catch (JSONException e) {
