@@ -78,6 +78,12 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                     }
 
+                    //避免id为0
+                    if (id.equals("0")){
+                        Toast.makeText(activity, "id不可以为0哦~", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     Object o=XposedHelpers.getObjectField(param.thisObject,"ac");//获取ac
 
                     if (o!=null) {
