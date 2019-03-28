@@ -201,7 +201,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
 
                 if (response.body()!=null) {
-                    String msg = response.body().string();
+//                    String msg = response.body().string();
 
                     Runnable runnable = () -> Toast.makeText(activity, "上传成功，感谢你的分享~", Toast.LENGTH_SHORT).show();
 
