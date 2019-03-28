@@ -84,9 +84,9 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
                 super.afterHookedMethod(param);
                 decorView= (ViewGroup) param.getResult();//获取返回的view
 
-                XposedBridge.log("info---->>>>"+decorView);
-
-                XposedBridge.log("view----->>>"+param.getResult());
+//                XposedBridge.log("info---->>>>"+decorView);
+//
+//                XposedBridge.log("view----->>>"+param.getResult());
 
                 resume();
 
@@ -98,9 +98,9 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
-                XposedBridge.log("obj----->>>>"+param.args[0]);
-
-                XposedBridge.log("instance---->>>>"+param.thisObject);
+//                XposedBridge.log("obj----->>>>"+param.args[0]);
+//
+//                XposedBridge.log("instance---->>>>"+param.thisObject);
 
 //                int s= (int) param.args[0];
 //
@@ -109,7 +109,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
                 if (param.args[0] instanceof String){//占巢成功，开始清空
                     isHook=true;
 
-                    XposedBridge.log("isHook---->>>hook");
+//                    XposedBridge.log("isHook---->>>hook");
 
 
                     return null;
@@ -161,7 +161,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
                     resume();
 
-                    XposedBridge.log("ishook--->>>"+isHook);
+//                    XposedBridge.log("ishook--->>>"+isHook);
 
                 }else {
                     isHook=true;
@@ -343,7 +343,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
                 String json=builder.toString();//获取json信息
 
-                XposedBridge.log("json---->>>"+json);
+//                XposedBridge.log("json---->>>"+json);
 
                 List<HideComic> hideComics= JsonUtil.getList(json);
 

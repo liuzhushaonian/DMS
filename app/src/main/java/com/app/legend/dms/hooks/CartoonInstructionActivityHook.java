@@ -72,7 +72,13 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                 book.setOnClickListener(v -> {
 
+                    if (activity==null){
+                        return;
+                    }
+
                     if (queryData(id)){//查询是否已经存在，是则不反应
+
+                        Toast.makeText(activity, "别点了，这本漫画以及被收录了", Toast.LENGTH_SHORT).show();
 
                         return;
 

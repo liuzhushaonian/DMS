@@ -13,6 +13,7 @@ import com.app.legend.dms.impl.HideItemOnClickListener;
 import com.app.legend.dms.model.HideComic;
 import com.app.legend.dms.utils.HideItem;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 
@@ -23,7 +24,7 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
 
 
     List<HideComic> hideComicList;
-    private static final String DEFAULT_IMAGE="https://ws1.sinaimg.cn/large/c13993a9ly1g1hqobmwurj208w0bwmxy.jpg";
+    private static final String DEFAULT_IMAGE="https://ws1.sinaimg.cn/large/c13993a9ly1g1imgjjxxlj208n0b6t9g.jpg";
 
     private HideItemOnClickListener listener;
 
