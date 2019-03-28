@@ -1,3 +1,6 @@
+# 有事？进群聊！ 群号：711079154
+![群](https://github.com/liuzhushaonian/DMS/blob/master/Snapshot/qrcode_1553762515618.jpg)
+
 # release
 
 隐藏在大妈土豆服务器里的神秘漫画啊，请在我面前显示你真正的力量，与你定下约定的模块命令你——release！
