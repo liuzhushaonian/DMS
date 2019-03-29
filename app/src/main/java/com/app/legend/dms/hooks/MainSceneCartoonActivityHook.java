@@ -2,9 +2,21 @@ package com.app.legend.dms.hooks;
 
 
 import android.app.Activity;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,6 +26,11 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * hook主界面
@@ -27,9 +44,6 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
     private static final String CLASS2="com.dmzj.manhua.ui.MainSceneCartoonActivity";
 
     private static final String CLASS3="com.dmzj.manhua.ui.MainSceneCartoonActivity$a";
-
-
-
 
 
     @Override
@@ -55,6 +69,8 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
 
 
+
+
             }
         });
 
@@ -66,18 +82,20 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             }
         });
 
-        /*将游戏图标去掉*/
+        /* 将游戏图标去掉
+        * 仔细想过了，还是不去掉，我的目的不是断大妈财路
+        *
+        * */
         XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "p", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-                View s= (View) XposedHelpers.getObjectField(param.thisObject,"s");
-                if (s!=null){
-                    s.setVisibility(View.GONE);
-                }
+//                View s= (View) XposedHelpers.getObjectField(param.thisObject,"s");
+//                if (s!=null){
+//                    s.setVisibility(View.GONE);
+//                }
 
-                //获取数据
                 Activity activity= (Activity) param.thisObject;
 
                 FileUtil.createFile(activity,"comic",false);
@@ -152,6 +170,8 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             }
         });
 
+
     }
+
 
 }

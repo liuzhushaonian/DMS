@@ -11,8 +11,8 @@ android {
         applicationId "com.app.legend.dms"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2
-        versionName "0.1-β"
+        versionCode 3
+        versionName "0.1-γ"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,7 +24,7 @@ android {
         }
     }
     android.applicationVariants.all { variant ->
-        def appName = "DMS_${defaultConfig.versionName}_${releaseTime()}"
+        def appName = "release_${defaultConfig.versionName}_${releaseTime()}"
 
         variant.outputs.all { output ->
             outputFileName = "${appName}.apk"

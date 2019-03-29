@@ -10,6 +10,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  * 去除启动页广告
  * 启动页广告有两处method，统一替换然后直接执行启动
  * 我特么的发现居然还有其他地方是显示启动页广告的，不按套路出牌啊，鸡蛋不能全放在一个篮子里的意思？
+ * 这里也作废，仅仅是调试时才可以启用
  */
 public class SplashAdHook extends BaseHook implements IXposedHookLoadPackage {
 
