@@ -77,7 +77,7 @@ public class HideItem extends RelativeLayout {
         int book_width= (int) getDip(100,context);
         int book_height= (int) getDip(120,context);
 
-        int margin= (int) getDip(8,context);
+        int margin= (int) getDip(6,context);
 
         RelativeLayout.LayoutParams bookParams=
                 new RelativeLayout.LayoutParams(book_width, book_height);

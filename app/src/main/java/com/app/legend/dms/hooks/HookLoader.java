@@ -71,6 +71,8 @@ public class HookLoader implements IXposedHookLoadPackage {
         init(HideFragmentHook.class.getName());
 
         init(MainSceneMineEnActivityHook.class.getName());
+
+        init(HttpHostHook.class.getName());
 //        init();
 
 //        addConstruct(HttpHostHook.class.getName());

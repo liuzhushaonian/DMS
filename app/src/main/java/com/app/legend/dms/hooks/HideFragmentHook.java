@@ -207,7 +207,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             RelativeLayout.LayoutParams params1= new
                     RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-//            params1.topMargin= (int) getDip(56,activity);//顶部有个72dp的margin
+            params1.topMargin= (int) getDip(48,activity);//顶部有个72dp的margin
 
             swipeRefreshLayout.setLayoutParams(params1);
 
@@ -247,34 +247,34 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
             swipeRefreshLayout.setOnRefreshListener(this::refreshData);
 
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-//                    Log.d("scroll---->>>",dy+"");
-
-                    if (dy>1){//向上滑动，不显示搜索框
-
-                        hideEdit();
-
-                    }else if (dy<0){//向下滑动，显示搜索框
-                        showEdit();
-                    }
-
-                    if (adapter!=null&&adapter.getItemCount()<3){
-
-                        showEdit();
-
-                    }else if (!recyclerView.canScrollVertically(-1)){
-
-                        hideEdit();
-
-                    }
-
-
-                }
-            });
+//            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//                @Override
+//                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                    super.onScrolled(recyclerView, dx, dy);
+//
+////                    Log.d("scroll---->>>",dy+"");
+//
+//                    if (dy>1){//向上滑动，不显示搜索框
+//
+//                        hideEdit();
+//
+//                    }else if (dy<0){//向下滑动，显示搜索框
+//                        showEdit();
+//                    }
+//
+//                    if (adapter!=null&&adapter.getItemCount()<3){
+//
+//                        showEdit();
+//
+//                    }else if (!recyclerView.canScrollVertically(-1)){
+//
+//                        hideEdit();
+//
+//                    }
+//
+//
+//                }
+//            });
 
 
         }
@@ -472,31 +472,31 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
     }
 
-    private void showEdit(){
-        if (editText!=null&&editText.getVisibility()==View.GONE){
-            editText.setVisibility(View.VISIBLE);
-
-//            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
-//            params.topMargin= (int) getDip(56,activity);
-//            swipeRefreshLayout.setLayoutParams(params);
-
-        }
-
-    }
-
-    private void hideEdit(){
-
-        if (editText!=null&&editText.getVisibility()==View.VISIBLE){
-
-            editText.setVisibility(View.GONE);
-
-//            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
-//            params.topMargin= 0;
-//            swipeRefreshLayout.setLayoutParams(params);
-
-        }
-
-    }
+//    private void showEdit(){
+//        if (editText!=null&&editText.getVisibility()==View.GONE){
+//            editText.setVisibility(View.VISIBLE);
+//
+////            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
+////            params.topMargin= (int) getDip(56,activity);
+////            swipeRefreshLayout.setLayoutParams(params);
+//
+//        }
+//
+//    }
+//
+//    private void hideEdit(){
+//
+//        if (editText!=null&&editText.getVisibility()==View.VISIBLE){
+//
+//            editText.setVisibility(View.GONE);
+//
+////            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
+////            params.topMargin= 0;
+////            swipeRefreshLayout.setLayoutParams(params);
+//
+//        }
+//
+//    }
 
 
 }

@@ -1,4 +1,5 @@
 com.app.legend.dms.hooks.CartoonInstructionActivityHook
 com.app.legend.dms.hooks.HideFragmentHook
+com.app.legend.dms.hooks.HttpHostHook
 com.app.legend.dms.hooks.MainSceneCartoonActivityHook
 com.app.legend.dms.hooks.MainSceneMineEnActivityHook
