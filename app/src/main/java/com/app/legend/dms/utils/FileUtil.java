@@ -42,12 +42,12 @@ public class FileUtil {
 
     }
     public static void downloadFile(Context context){
-        NetUtil.Download("https://github.com/liuzhushaonian/DMS/releases/download/0.1-beta/comic",context);
+        NetUtil.download("http://comic.legic.xyz/comic/comic",context);
 
     }
 
     public static void downloadFileByOne(Context context){
-        NetUtil.downloadFileByOne("https://github.com/liuzhushaonian/DMS/releases/download/0.1-beta/comic",context);
+        NetUtil.downloadFileByOne("http://comic.legic.xyz/comic/comic",context);
 
     }
 

@@ -20,10 +20,12 @@ import okhttp3.Response;
  */
 public class NetUtil {
 
+    private static int o=0;
+
     /**
      * 下载文件
      */
-    public static void Download(String url,Context context){
+    public static void download(String url, Context context){
 
         OkHttpClient client=new OkHttpClient.Builder().build();
 
@@ -35,7 +37,12 @@ public class NetUtil {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d("download--->>>","下载失败了");
+
+                if (0<3){
+
+                    download("https://github.com/liuzhushaonian/DMS/releases/download/0.1-beta/comic",context);
+                    o++;
+                }
             }
 
             @Override

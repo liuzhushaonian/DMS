@@ -11,8 +11,8 @@ android {
         applicationId "com.app.legend.dms"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName "0.1-γ"
+        versionCode 4
+        versionName "0.1-δ"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

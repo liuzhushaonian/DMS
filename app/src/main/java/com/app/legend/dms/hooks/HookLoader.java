@@ -72,7 +72,7 @@ public class HookLoader implements IXposedHookLoadPackage {
 
         init(MainSceneMineEnActivityHook.class.getName());
 
-        init(HttpHostHook.class.getName());
+//        init(HttpHostHook.class.getName());
 //        init();
 
 //        addConstruct(HttpHostHook.class.getName());

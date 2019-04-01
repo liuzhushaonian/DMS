@@ -20,7 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import com.app.legend.dms.adapter.HideAdapter;
 import com.app.legend.dms.model.HideComic;
 import com.app.legend.dms.utils.Conf;
@@ -65,7 +68,10 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
     private EditText editText;//搜索框
 
+    private LinearLayout linearLayout;
 
+
+    private boolean refresh=false;
 
     private Activity activity;//上帝对象context
 
@@ -88,7 +94,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 //
 //                XposedBridge.log("view----->>>"+param.getResult());
 
-                resume();
+//                resume();
 
             }
         });
@@ -168,12 +174,13 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
                 }
 
                 if (i==1){
-                    initRecyclerView();
+//                    initRecyclerView();
+
+                    initView();//初始化view
 
                     loader=lpparam.classLoader;
 
                 }
-
             }
         });
 
@@ -181,33 +188,46 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
     }
 
-    /*清除里面所有view*/
-    private void clean(){
-
-        if (this.decorView!=null&&isHook){
-
-            decorView.removeAllViews();//清除所有view
-
-        }else {
+    /**
+     * 初始化view
+     */
+    private void initView(){
 
 
-        }
+//        if (linearLayout!=null&&linearLayout.getVisibility()==View.VISIBLE){
+//
+//            linearLayout.setVisibility(View.VISIBLE);
+//
+//            XposedBridge.log("init---->>>显示！");
+//
+//        }else {
+
+        decorView.removeView(linearLayout);
+
+            linearLayout = new LinearLayout(activity);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);//垂直布局
+
+            this.decorView.removeView(linearLayout);
+            this.decorView.addView(linearLayout);
+
+            initEditText();//初始化搜索框
+            initRecyclerView();//初始化列表
+
+
+//        }
 
     }
 
     private void initRecyclerView(){
 
 
-
-        if (isHook&&swipeRefreshLayout!=null&&swipeRefreshLayout.getVisibility()==View.GONE){
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
-        }else if (activity!=null&&decorView!=null&&isHook){
+        if (activity!=null&&decorView!=null&&isHook){
 
             swipeRefreshLayout=new SwipeRefreshLayout(activity);
             RelativeLayout.LayoutParams params1= new
                     RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-            params1.topMargin= (int) getDip(48,activity);//顶部有个72dp的margin
+//            params1.topMargin= (int) getDip(48,activity);//顶部有个72dp的margin
 
             swipeRefreshLayout.setLayoutParams(params1);
 
@@ -216,7 +236,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             recyclerView.setBackgroundColor(Color.WHITE);
 
 //            decorView.removeAllViews();
-            this.decorView.addView(swipeRefreshLayout);//添加到里面来
+            this.linearLayout.addView(swipeRefreshLayout);//添加到里面来
 
             swipeRefreshLayout.addView(recyclerView);
 
@@ -284,7 +304,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             initData();//初始化数据
         }
 
-        initEditText();//初始化搜索框
+
 
     }
 
@@ -293,11 +313,11 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
      */
     private void resume(){
 
-        if (decorView!=null&&!isHook&&recyclerView!=null){
+        if (linearLayout!=null){
 
 //            decorView.removeView(recyclerView);//恢复
 
-            swipeRefreshLayout.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.GONE);
 
         }
 
@@ -378,11 +398,15 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             hideComicList=list;
             adapter.setHideComicList(hideComicList);
             swipeRefreshLayout.setRefreshing(false);
+
+            if (refresh){
+                Toast.makeText(activity, "已刷新最新数据", Toast.LENGTH_SHORT).show();
+                refresh=false;
+            }
+
         };
 
         activity.runOnUiThread(runnable);
-
-
 
     }
 
@@ -410,6 +434,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
     private void refreshData(){
 
 
+        refresh=true;
+
         FileUtil.deleteFile(activity,"comic");
 
         initData();
@@ -419,14 +445,15 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
     private void initEditText(){
 
-        if (editText==null&&activity!=null){
+        if (activity!=null){
 
             editText=new EditText(activity);
             RelativeLayout.LayoutParams params=
                     new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) getDip(48,activity));
 
             editText.setLayoutParams(params);
-            decorView.addView(editText);
+            linearLayout.removeView(editText);
+            linearLayout.addView(editText);
 
             editText.setHint("搜索漫画&作者");
 
@@ -471,32 +498,5 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
                 activity.getResources().getDisplayMetrics());
 
     }
-
-//    private void showEdit(){
-//        if (editText!=null&&editText.getVisibility()==View.GONE){
-//            editText.setVisibility(View.VISIBLE);
-//
-////            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
-////            params.topMargin= (int) getDip(56,activity);
-////            swipeRefreshLayout.setLayoutParams(params);
-//
-//        }
-//
-//    }
-//
-//    private void hideEdit(){
-//
-//        if (editText!=null&&editText.getVisibility()==View.VISIBLE){
-//
-//            editText.setVisibility(View.GONE);
-//
-////            RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) swipeRefreshLayout.getLayoutParams();
-////            params.topMargin= 0;
-////            swipeRefreshLayout.setLayoutParams(params);
-//
-//        }
-//
-//    }
-
 
 }
