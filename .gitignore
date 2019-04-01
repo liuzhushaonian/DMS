@@ -9,6 +9,8 @@
 /build
 /captures
 .externalNativeBuild
+SplashAdHook.java
+
 
 
 # Created by https://www.gitignore.io/api/androidstudio
