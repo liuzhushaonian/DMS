@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
         webView=findViewById(R.id.webview);
 
-        webView.loadUrl("https://github.com/liuzhushaonian/DMS/blob/master/README.md");
+        webView.loadUrl("https://github.com/liuzhushaonian/release/blob/master/README.md");
 
     }
 
