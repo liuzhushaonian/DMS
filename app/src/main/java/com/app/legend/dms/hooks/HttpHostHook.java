@@ -30,7 +30,7 @@ public class HttpHostHook extends BaseHook implements IXposedHookLoadPackage {
 //                XposedBridge.log("port---->>>"+p);
 
                 if (p!=-1){//检测到原APP访问网络时会有端口为-1的情况，那个应该是不走代理的，故不做改变
-                    param.args[0]="192.168.0.6";
+                    param.args[0]="192.168.0.5";
                     param.args[1]=9001;
                 }
 //                XposedBridge.log("host---->>>"+h);

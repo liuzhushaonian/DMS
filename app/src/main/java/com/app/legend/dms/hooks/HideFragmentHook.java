@@ -1,6 +1,7 @@
 package com.app.legend.dms.hooks;
 
 import android.app.Activity;
+import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -85,7 +86,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
 
         /*hook布局，一开始将布局给替换*/
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "b", LayoutInflater.class, ViewGroup.class, Bundle.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "b", LayoutInflater.class, ViewGroup.class, Bundle.class,
+                new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);

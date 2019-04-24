@@ -38,9 +38,9 @@ public class NetUtil {
             @Override
             public void onFailure(Call call, IOException e) {
 
-                if (0<3){
+                if (o<3){
 
-                    download("https://github.com/liuzhushaonian/DMS/releases/download/0.1-beta/comic",context);
+                    download("https://github.com/liuzhushaonian/release/releases/download/comic/comic",context);
                     o++;
                 }
             }
@@ -52,6 +52,7 @@ public class NetUtil {
                 InputStream is = null;
                 FileOutputStream fileOutputStream = null;
                 try {
+                    assert response.body() != null;
                     is = response.body().byteStream();
                     fileOutputStream = new FileOutputStream(file, false);
                     byte[] buffer = new byte[2048];//缓冲数组2kB

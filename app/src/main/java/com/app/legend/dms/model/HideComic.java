@@ -3,15 +3,20 @@ package com.app.legend.dms.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import lombok.Data;
+
 /**
  * model
  */
+@Data
 public class HideComic implements Parcelable {
 
     private String id;
     private String title;
     private String author;
     private String bookLink;
+    private String status;
+    private String description;
 
     public HideComic() {
     }
@@ -36,37 +41,6 @@ public class HideComic implements Parcelable {
         }
     };
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getBookLink() {
-        return bookLink;
-    }
-
-    public void setBookLink(String bookLink) {
-        this.bookLink = bookLink;
-    }
 
     @Override
     public int describeContents() {
