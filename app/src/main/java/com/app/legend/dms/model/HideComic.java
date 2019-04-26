@@ -17,6 +17,7 @@ public class HideComic implements Parcelable {
     private String bookLink;
     private String status;
     private String description;
+    private int delete;
 
     public HideComic() {
     }
@@ -27,6 +28,9 @@ public class HideComic implements Parcelable {
         title = in.readString();
         author = in.readString();
         bookLink = in.readString();
+        status = in.readString();
+        description = in.readString();
+        delete = in.readInt();
     }
 
     public static final Creator<HideComic> CREATOR = new Creator<HideComic>() {
@@ -41,7 +45,6 @@ public class HideComic implements Parcelable {
         }
     };
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -53,5 +56,8 @@ public class HideComic implements Parcelable {
         dest.writeString(title);
         dest.writeString(author);
         dest.writeString(bookLink);
+        dest.writeString(status);
+        dest.writeString(description);
+        dest.writeInt(delete);
     }
 }

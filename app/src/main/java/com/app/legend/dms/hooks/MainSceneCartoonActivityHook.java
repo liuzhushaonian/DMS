@@ -99,6 +99,8 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                 Activity activity= (Activity) param.thisObject;
 
                 FileUtil.createFile(activity,"comic",false);
+                FileUtil.createFile(activity,"chapter",false);
+
                 FileUtil.downloadFile(activity);
 
             }

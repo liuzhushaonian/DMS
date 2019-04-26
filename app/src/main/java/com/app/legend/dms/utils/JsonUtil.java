@@ -7,7 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonUtil {
 
@@ -78,6 +80,53 @@ public class JsonUtil {
         }
 
         return result;
+    }
+
+
+    /**
+     * 解析章节
+     * @param json
+     * @return
+     */
+    public static Map<String,JSONObject> getJsonObjectList(String json){
+
+        Map<String,JSONObject> map=new HashMap<>();
+        JSONObject object=null;
+
+        try {
+            object=new JSONObject(json);
+
+            if (!object.has("list")){
+                return map;
+            }
+
+            JSONArray array=object.getJSONArray("list");
+
+            for (int i=0;i<array.length();i++){
+
+
+                JSONObject o=array.getJSONObject(i);
+
+                String id="";
+
+                if (o.has("id")){
+
+                    id=o.getString("id");
+
+                }
+
+                map.put(id,o);
+
+
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return map;
+
     }
 
 }

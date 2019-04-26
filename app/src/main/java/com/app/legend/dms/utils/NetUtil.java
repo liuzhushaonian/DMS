@@ -25,7 +25,7 @@ public class NetUtil {
     /**
      * 下载文件
      */
-    public static void download(String url, Context context){
+    public static void download(String url, Context context,String name){
 
         OkHttpClient client=new OkHttpClient.Builder().build();
 
@@ -40,7 +40,7 @@ public class NetUtil {
 
                 if (o<3){
 
-                    download("https://github.com/liuzhushaonian/release/releases/download/comic/comic",context);
+                    download("https://github.com/liuzhushaonian/release/releases/download/comic/comic",context,name);
                     o++;
                 }
             }
@@ -48,7 +48,7 @@ public class NetUtil {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                File file = new File(context.getFilesDir(),"comic");
+                File file = new File(context.getFilesDir(),name);
                 InputStream is = null;
                 FileOutputStream fileOutputStream = null;
                 try {
@@ -82,7 +82,7 @@ public class NetUtil {
      * @param url
      * @param context
      */
-    public static void downloadFileByOne(String url,Context context){
+    public static void downloadFileByOne(String url,Context context,String name){
 
         OkHttpClient client=new OkHttpClient.Builder().build();
 
@@ -93,7 +93,7 @@ public class NetUtil {
 
         try {
             Response response=client.newCall(request).execute();
-            File file = new File(context.getFilesDir(),"comic");
+            File file = new File(context.getFilesDir(),name);
             InputStream is = null;
             FileOutputStream fileOutputStream = null;
             try {
