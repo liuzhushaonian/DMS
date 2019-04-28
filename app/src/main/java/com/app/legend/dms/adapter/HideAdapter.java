@@ -86,6 +86,18 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
         HideComic comic=this.showList.get(i);
         viewHolder.title.setText(comic.getTitle());
         viewHolder.author.setText("作者："+comic.getAuthor());
+//        viewHolder.del.setText("已删除");
+
+        int delete=comic.getDelete();
+
+        if (delete>0){//已经下架
+
+            viewHolder.del.setVisibility(View.VISIBLE);
+        }else {
+
+
+            viewHolder.del.setVisibility(View.GONE);
+        }
 
         String book=comic.getBookLink();
 
@@ -174,6 +186,7 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
         ImageView book;
         TextView title;
         TextView author;
+        TextView del;
         View view;
 
         ViewHolder(HideItem itemView) {
@@ -182,6 +195,7 @@ public class HideAdapter extends BaseAdapter<HideAdapter.ViewHolder> {
             book=itemView.getBook();
             title=itemView.getTitle();
             author=itemView.getAuthor();
+            del=itemView.getDel();
         }
     }
 

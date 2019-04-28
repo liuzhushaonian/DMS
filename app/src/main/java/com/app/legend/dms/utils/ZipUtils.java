@@ -35,6 +35,7 @@ public class ZipUtils {
     public static ZipFile createZip(String name) {
 
         name=name.replace("！","");
+        name=name.replace(" ","");
 
         File file=new File(PATH,name+".zip");
 

@@ -39,8 +39,12 @@ public class JsonUtil {
                 if (o.has("dmId")) {
                     comic.setId(o.getString("dmId"));
                 }
-                if (o.has("bookLink")) {
-                    comic.setBookLink(o.getString("bookLink"));
+                if (o.has("cover")) {
+                    comic.setBookLink(o.getString("cover"));
+                }
+
+                if (o.has("del")){
+                    comic.setDelete(o.getInt("del"));
                 }
 
                 hideComicList.add(comic);

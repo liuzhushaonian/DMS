@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AndroidAppHelper;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
@@ -78,6 +81,8 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
     String status="";
     String letter="";
+
+    private SQLiteDatabase sqLiteDatabase;
 
 
     @Override
@@ -196,40 +201,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         });
 
 
-//        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "c", boolean.class, new XC_MethodHook() {
-//            @Override
-//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                super.afterHookedMethod(param);
-//
-//                getData();
-//
-////                Activity activity= (Activity) param.thisObject;
-////
-////                Window window=activity.getWindow();
-////
-////                ViewGroup d= (ViewGroup) window.getDecorView();
-////
-////
-////
-////                ViewGroup viewGroup= (ViewGroup) d.getChildAt(0);
-////
-////                ViewGroup viewGroup1= (ViewGroup) viewGroup.getChildAt(1);
-////
-////                ViewGroup RelativeLayout= (ViewGroup) viewGroup1.getChildAt(0);
-////
-////                for (int i=0;i<RelativeLayout.getChildCount();i++){
-////
-////                    XposedBridge.log("child--->>"+RelativeLayout.getChildAt(i).getVisibility());
-////
-////                }
-//
-//
-//
-//            }
-//        });
 
-
-        //在它之后判断漫画是否被下架，如果是，则替换，如果不是，则不替换
         XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "c", boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -245,46 +217,79 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                 }
 
-                getLocalChar();
+                String info=getLocalInfos();
 
-                JSONObject object=getObject(id);
+//                XposedBridge.log("info--->>>"+info);
 
+                if (info!=null&&!TextUtils.isEmpty(info)&&!info.equals("null")){
+
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            super.run();
+
+                            JSONObject object= null;
+                            try {
+                                object = new JSONObject(info);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                            JSONObject finalObject = object;
+                            Runnable runnable= () -> {
+                                if (finalObject !=null){
+
+                                    XposedHelpers.callMethod(param.thisObject, "a", finalObject, false);
+
+                                }
+                            };
+
+                            activity.runOnUiThread(runnable);
+                        }
+                    }.start();
+
+                }else {
+
+
+                    getLocalChar();
+
+//                XposedBridge.log("map--->>>"+objectMap.size());
+
+                    JSONObject object = getObject(id);
 
 
 //                XposedBridge.log("map--->>>"+objectMap);
 
-                if (object!=null){//表示已收藏该下架漫画，显示出来
+                    if (object != null) {//表示已收藏该下架漫画，显示出来
 
 
-//                    XposedBridge.log("show---->>>"+object.toString());
-                    XposedHelpers.callMethod(param.thisObject,"a",object,false);
+                    XposedBridge.log("show---->>>"+object.toString());
+                        XposedHelpers.callMethod(param.thisObject, "a", object, false);
 
+                    }
                 }
 
             }
         });
 
 
-//        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "a", Object.class, boolean.class, new XC_MethodHook() {
-//
-//            @Override
-//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                super.beforeHookedMethod(param);
-//
-//
-//
-//                boolean f= (boolean) param.args[1];//获取第二个参数，判断是否有本地缓存，如果是false，则不替换
-//
-//                if (!f){//替换
-//
-//                    JSONObject object=new JSONObject(json);
-//
-//                    param.args[0]=object;
-//
-//                }
-//
-//            }
-//        });
+        /**
+         * 获取sqLiteDatabase实例，操作数据库
+         */
+        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g", lpparam.classLoader, "com.dmzj.manhua.e.a",
+                new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        super.afterHookedMethod(param);
+
+                        Object object = param.args[0];
+
+                        sqLiteDatabase = (SQLiteDatabase) XposedHelpers.callMethod(object, "getWritableDatabase");
+
+
+                    }
+                });
 
 
     }
@@ -324,11 +329,9 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
         }).setNeutralButton("上传章节信息",(dialog, which) -> {
 
-            try {
-                getCharInfo(activity);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
+            getCharInfo();
+
 
 
         }).setNegativeButton("取消",(dialog, which) -> {
@@ -460,143 +463,53 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
     /**
      * 获取章节信息
-     * @param k 传入本hook对象
+     *
      */
-    private void getCharInfo(Object k) throws JSONException {
-
-        Object o=XposedHelpers.getObjectField(k,"ac");//获取ac
-
-        List list= (List) XposedHelpers.getObjectField(o,"chapters");//获取漫画的大章节信息，一般是连载，单行本，其他或是原作之类的
-
-        JSONObject jsonObject=new JSONObject();//总object
-
-//        List<CharInfo> infos=new ArrayList<>();
-//
-//        List<Char> charList=new ArrayList<>();
-
-        JSONArray array=new JSONArray();//大章节数组
-
-        JSONArray chars=new JSONArray();//章节数组
-
-        JSONArray authors=new JSONArray();//作者数组
-
-        List authorList= (List) XposedHelpers.getObjectField(o,"authors");//获取作者数组
-
-        for (int l=0;l<authorList.size();l++){
-
-            Object a= authorList.get(l);
-
-            JSONObject author=new JSONObject();
-
-            int id= XposedHelpers.getIntField(a,"tag_id");
-
-            String name= (String) XposedHelpers.getObjectField(a,"tag_name");
-
-            author.put("tag_id",id);
-            author.put("tag_name",name);
-
-            authors.put(author);//放入数组
-
-
-        }
-
-        jsonObject.put("authors",authors);
-
-
-
-        for (int i=0;i<list.size();i++){
-
-
-            Object o1=list.get(i);
-
-            String infoTitle= (String) XposedHelpers.getObjectField(o1,"title");//获取名字
-
-//            CharInfo info=new CharInfo();
-//
-//            info.setTitle(infoTitle);
-//            info.setDmId(id);
-
-            JSONObject in=new JSONObject();
-
-            in.put("title",infoTitle);
-            in.put("dmId",id);
-
-            array.put(in);
-
-
-//          posedBridge.log("jsonObject----->>>>"+o1.toString());
-
-            List l= (List) XposedHelpers.getObjectField(o1,"data");//获取具体章节
-
-//            XposedBridge.log("size--->>>"+l.size());
-
-            for (int p=0;p<l.size();p++){
-
-                Object q=l.get(p);
-
-                String chapter_title= (String) XposedHelpers.getObjectField(q,"chapter_title");//章节名字
-
-//                String title= (String) XposedHelpers.getObjectField(q,"title");
-
-                String charId= (String) XposedHelpers.getObjectField(q,"chapter_id");//章节id
-
-//                XposedBridge.log("charId--->>>"+charId);
-
-                int order=XposedHelpers.getIntField(q,"chapter_order");//章节序号
-
-
-//                Char c=new Char();
-//                c.setChapterOrder(order);//顺序
-//                c.setCharId(charId);//章节id
-//                c.setDmId(id);//漫画id
-//                c.setCharInfoTitle(infoTitle);//大章节名字
-//                c.setTitle(chapter_title);
-
-                JSONObject m=new JSONObject();
-
-                m.put("charId",charId);
-                m.put("dmId",id);
-                m.put("title",chapter_title);
-                m.put("charInfoTitle",infoTitle);
-                m.put("chapterOrder",order);
-
-                chars.put(m);
-
-
-//                XposedBridge.log("chapter_title--->>>"+chapter_title);
-
-            }
-
-        }
-
-        //循环完成，将所有信息封装到jsonObject
-
-
-
-        jsonObject.put("chars",chars);
-
-        jsonObject.put("charsInfo",array);
-
-        //放入普通信息
-
-        jsonObject.put(Conf.COMIC_NAME,name);
-        jsonObject.put(Conf.COMIC_ID,id);
-        jsonObject.put(Conf.AUTHOR,author);
-        jsonObject.put(Conf.COMIC_BOOK,cover);//
-
-        jsonObject.put("status",status);
-        jsonObject.put("description",description);
-        jsonObject.put("first_letter",letter);
-
+    private void getCharInfo(){
 
 //        uploadAndSave(activity,jsonObject);//上传
+
+        Toast.makeText(activity, "正在上传，请稍后", Toast.LENGTH_SHORT).show();
 
         new Thread(){
 
             @Override
             public void run() {
                 super.run();
-                uploadJsonChapterFile(jsonObject);
+
+
+                if (sqLiteDatabase==null){
+                    return;
+                }
+
+                String sql="select * from commic_cache where commic_id = '"+id+"' limit 1";//查询数据库里的对应id的值
+
+                Cursor cursor=sqLiteDatabase.rawQuery(sql,null);
+
+                String info="";
+
+                if (cursor!=null){
+
+                    if (cursor.moveToFirst()){
+
+                        do {
+
+                            info=cursor.getString(cursor.getColumnIndex("commic_info"));
+
+
+                        }while (cursor.moveToNext());
+
+
+                    }
+
+
+                    cursor.close();
+
+                }
+
+
+
+                uploadJsonChapterFile(info);
 
             }
         }.start();
@@ -664,13 +577,13 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
     }
 
 
-    private void uploadJsonChapterFile(JSONObject object){
+    private void uploadJsonChapterFile(String json){
 
         File file=new File(AndroidAppHelper.currentApplication().getFilesDir(),"ccc");//生成文件
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
-            out.write(object.toString()); // \r\n即为换行
+            out.write(json); // \r\n即为换行
             out.flush(); // 把缓存区内容压入文件
             out.close();
         } catch (IOException e) {
@@ -732,5 +645,42 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         });
     }
 
+
+    /**
+     * 优先
+     * 从本地获取信息并展示
+     * @return
+     */
+    private String getLocalInfos(){
+
+        if (sqLiteDatabase==null){
+            return null;
+        }
+
+        String sql="select * from commic_cache where commic_id = '"+id+"' limit 1";
+
+        Cursor cursor=sqLiteDatabase.rawQuery(sql,null);
+
+        String info="";
+
+        if (cursor!=null){
+
+            if (cursor.moveToFirst()){
+
+                do {
+
+                    info=cursor.getString(cursor.getColumnIndex("commic_info"));
+
+                }while (cursor.moveToNext());
+
+            }
+
+
+            cursor.close();
+        }
+
+        return info;
+
+    }
 
 }

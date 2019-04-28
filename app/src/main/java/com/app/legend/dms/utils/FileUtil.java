@@ -49,7 +49,7 @@ public class FileUtil {
 
     public static void downloadFileByOne(Context context){
         NetUtil.downloadFileByOne("http://comic.legic.xyz/comic/comic",context,"comic");
-        NetUtil.download("http://comic.legic.xyz/comic/chapter",context,"chapter");
+        NetUtil.downloadFileByOne("http://comic.legic.xyz/comic/chapter",context,"chapter");
 
     }
 
