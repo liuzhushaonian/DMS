@@ -64,7 +64,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
     private static final String METHOD="g";
 
     private static final String HOST="http://dms.legic.xyz:9006";
-    private static final String DEBUG="http://192.168.0.4:9006";
+    private static final String DEBUG="http://192.168.0.5:9006";
 
     private String author="";
     private String name;
@@ -219,7 +219,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                 String info=getLocalInfos();
 
-//                XposedBridge.log("info--->>>"+info);
+                XposedBridge.log("info--->>>"+info);
 
                 if (info!=null&&!TextUtils.isEmpty(info)&&!info.equals("null")){
 
@@ -264,8 +264,12 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                     if (object != null) {//表示已收藏该下架漫画，显示出来
 
 
-                    XposedBridge.log("show---->>>"+object.toString());
+//                    XposedBridge.log("show---->>>"+object.toString());
                         XposedHelpers.callMethod(param.thisObject, "a", object, false);
+
+
+                        addLocalInfo(id,object.toString());
+
 
                     }
                 }
@@ -682,5 +686,35 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         return info;
 
     }
+
+
+    /**
+     * 将记录添加到本地，适用于章节显示
+     */
+    private void addLocalInfo(String id,String data){
+
+        if (sqLiteDatabase==null){
+            return;
+        }
+
+        String sql="select commic_id from commic_cache where commic_id = '"+id+"' limit 1";
+
+        Cursor cursor=sqLiteDatabase.rawQuery(sql,null);
+
+        if (cursor!=null){
+
+            if (!cursor.moveToFirst()){//表示为空
+
+                String s1="insert into commic_cache (commic_id,commic_info,version) values ('"+id+"','"+data+"',2)";
+
+                sqLiteDatabase.execSQL(s1);//插入数据
+            }
+
+            cursor.close();
+        }
+
+
+    }
+
 
 }
