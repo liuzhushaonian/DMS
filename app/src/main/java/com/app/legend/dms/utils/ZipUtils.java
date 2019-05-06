@@ -80,7 +80,7 @@ public class ZipUtils {
 
                     FileInputStream fileInputStream = new FileInputStream(path);
 
-                    String name=comic.getBigTitle()+"_"+comic.getCharTitle();
+                    String name=comic.getBigTitle()+"_"+comic.getCharTitle()+".zip";
 
                     parameters.setFileNameInZip(name);
 
