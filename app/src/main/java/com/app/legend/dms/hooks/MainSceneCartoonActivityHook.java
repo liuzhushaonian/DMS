@@ -5,8 +5,6 @@ import android.app.Activity;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
