@@ -1,21 +1,16 @@
 package com.app.legend.dms.hooks;
 
 import android.app.Activity;
-import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
-
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,23 +19,17 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.app.legend.dms.adapter.HideAdapter;
 import com.app.legend.dms.model.HideComic;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
 import com.app.legend.dms.utils.JsonUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.io.InputStreamReader;
-
 import java.lang.reflect.Method;
-
 import java.util.List;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;

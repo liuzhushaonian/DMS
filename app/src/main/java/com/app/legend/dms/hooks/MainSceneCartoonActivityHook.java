@@ -2,21 +2,8 @@ package com.app.legend.dms.hooks;
 
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
-
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,11 +13,6 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * hook主界面
@@ -57,7 +39,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
 
-                String arrays[]=new String[]{"推荐","封印","更新","分类","排行","专题"};
+                String[] arrays = new String[]{"推荐", "封印", "更新", "分类", "排行", "专题"};
 
                 Class<?> c=lpparam.classLoader.loadClass(CLASS);
 
@@ -119,31 +101,19 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                     Object o=null;
 
                     try {
-
                         Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.g.a");
 
                         o=clazz.newInstance();
-                        Method method=clazz.getDeclaredMethod("a",Object.class);
+//                        Method method=clazz.getDeclaredMethod("a",Object.class);
+//
+//                        method.setAccessible(true);
+//
+//                        method.invoke(o,"pp");
+//                       o= XposedHelpers.newInstance(Class.forName("com.dmzj.manhua.g.a"),  null);
 
-                        method.setAccessible(true);
-
-                        method.invoke(o,"pp");
+                       XposedHelpers.callMethod(o,"a","pp");
 
                     } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        System.out.println("此处接收被调用方法内部未被捕获的异常");
-                        Throwable t = e.getTargetException();// 获取目标异常
-                        t.printStackTrace();
-                    } catch (InstantiationException e) {
                         e.printStackTrace();
                     }
 
