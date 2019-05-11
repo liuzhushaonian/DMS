@@ -42,7 +42,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage {
 
-    private static final String CLASS = "com.dmzj.manhua.g.a";
+    private static final String CLASS = "com.dmzj.manhua.h.a";
 
     private static final String CLASS2 = "com.dmzj.manhua.ui.MainSceneCartoonActivity$1";//hook OnPageChangeListener
 

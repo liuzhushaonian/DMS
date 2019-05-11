@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +93,8 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                 }
 
-                ImageView book= (ImageView) XposedHelpers.getObjectField(param.thisObject,"u");//获取封面imageview
+                //获取封面imageview,id为R.id.img_cover
+                ImageView book= (ImageView) XposedHelpers.getObjectField(param.thisObject,"v");
 
                 book.setOnClickListener(v -> {
 
@@ -145,13 +147,16 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                     }
 
-                    TextView t = (TextView) XposedHelpers.getObjectField(param.thisObject,"v");
+                    //获取作者的textview，id为R.id.txt_first
+                    TextView t = (TextView) XposedHelpers.getObjectField(param.thisObject,"w");
+
 
                     if (t!=null) {
                         author = t.getText().toString();
                     }
 
-                    TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"z");
+                    //获取状态 R.id.txt_fifth
+                    TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"A");
 
                     if (z!=null){
 
@@ -171,6 +176,48 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
             }
         });
 
+
+        /**
+         * 显示下载按钮
+         */
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "f", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+
+                activity= (Activity) param.thisObject;
+
+                TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"Z");
+
+                new Thread(){
+
+                    @Override
+                    public void run() {
+                        super.run();
+
+                        try {
+                            sleep(2000);
+
+                            Runnable runnable= () -> {
+                                z.setVisibility(View.VISIBLE);
+                                XposedBridge.log("显示下载按钮");
+
+                            };
+
+                            activity.runOnUiThread(runnable);
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }.start();
+
+
+            }
+        });
+
+
         XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "onResume", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -186,14 +233,51 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         });
 
 
-
+        /**
+         * 本地渲染
+         *
+         */
         XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "c", boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
                 Activity activity= (Activity) param.thisObject;
+                TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"Z");
+
+//                XposedHelpers.getIntField(param.thisObject,"ag");
+
+
+
+                new Thread(){
+
+                    @Override
+                    public void run() {
+                        super.run();
+
+                        try {
+                            sleep(1000);
+
+                            Runnable runnable= () -> {
+                                z.setVisibility(View.VISIBLE);
+                                //更改下架漫画的标记，使之可以正常阅读
+                                XposedHelpers.setIntField(param.thisObject,"ag",0);
+
+                            };
+
+                            activity.runOnUiThread(runnable);
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }.start();
+
+                z.setVisibility(View.VISIBLE);
+
                 Intent intent=activity.getIntent();
+
 
                 if (intent!=null){
 
@@ -204,8 +288,6 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                 String info=getLocalInfos();
 
-                XposedBridge.log("info--->>>"+info);
-
                 if (info!=null&&!TextUtils.isEmpty(info)&&!info.equals("null")){
 
                     new Thread(){
@@ -213,19 +295,14 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                         public void run() {
                             super.run();
 
-                            JSONObject object= null;
-                            try {
-                                object = new JSONObject(info);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
 
+                            Object object=getAcObject(info);
 
-                            JSONObject finalObject = object;
                             Runnable runnable= () -> {
-                                if (finalObject !=null){
+                                if (object !=null){
 
-                                    XposedHelpers.callMethod(param.thisObject, "a", finalObject, false);
+                                    //调用本地的方法渲染UI
+                                    XposedHelpers.callMethod(param.thisObject, "a", object, false);
 
                                 }
                             };
@@ -243,14 +320,20 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                     JSONObject object = getObject(id);
 
+                    if (object==null){
+                        return;
+                    }
+
+                    Object object1=getAcObject(object.toString());
+
 
 //                XposedBridge.log("map--->>>"+objectMap);
 
-                    if (object != null) {//表示已收藏该下架漫画，显示出来
+                    if (object1 != null) {//表示已收藏该下架漫画，显示出来
 
 
 //                    XposedBridge.log("show---->>>"+object.toString());
-                        XposedHelpers.callMethod(param.thisObject, "a", object, false);
+                        XposedHelpers.callMethod(param.thisObject, "a", object1, false);
 
 
                         addLocalInfo(id,object.toString());
@@ -266,7 +349,8 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         /**
          * 获取sqLiteDatabase实例，操作数据库
          */
-        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g", lpparam.classLoader, "com.dmzj.manhua.e.a",
+        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g",
+                lpparam.classLoader, "com.dmzj.manhua.e.a",
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -697,7 +781,22 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
             cursor.close();
         }
+    }
 
+    private Object getAcObject(String info){
+
+        Object object=null;
+
+        try {
+            object= XposedHelpers
+                    .callStaticMethod(Class.forName("com.dmzj.manhua.utils.x"),
+                            "a",info,
+                            Class.forName("com.dmzj.manhua.beanv2.CartoonDescription"));//调用静态方法生成ac对象并返回
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return object;
 
     }
 

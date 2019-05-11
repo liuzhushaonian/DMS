@@ -1,1 +1,6 @@
-com.app.legend.dms.hooks.HookLoader
+com.app.legend.dms.hooks.CartoonInstructionActivityHook
+com.app.legend.dms.hooks.DownLoadLoadingActivityHook
+com.app.legend.dms.hooks.HideFragmentHook
+com.app.legend.dms.hooks.MainSceneCartoonActivityHook
+com.app.legend.dms.hooks.MainSceneMineEnActivityHook
+com.app.legend.dms.hooks.MineCartoonDownActivityHook

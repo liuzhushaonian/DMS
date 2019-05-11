@@ -68,7 +68,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
         * 仔细想过了，还是不去掉，我的目的不是断大妈财路
         *
         * */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "p", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "n", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -101,7 +101,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                     Object o=null;
 
                     try {
-                        Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.g.a");
+                        Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.h.a");
 
                         o=clazz.newInstance();
 //                        Method method=clazz.getDeclaredMethod("a",Object.class);

@@ -39,7 +39,7 @@ public class DownLoadLoadingActivityHook extends BaseHook implements IXposedHook
             return;
         }
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "g", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "f", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);

@@ -41,7 +41,10 @@ public class MainSceneMineEnActivityHook extends BaseHook implements IXposedHook
             return;
         }
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "f", new XC_MethodHook() {
+        /**
+         * findviewbyid，初始化控件的时候
+         */
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "e", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);

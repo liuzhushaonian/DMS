@@ -61,7 +61,8 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
         /**
          * 获取sqLiteDatabase实例，操作数据库
          */
-        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g", lpparam.classLoader, "com.dmzj.manhua.e.a",
+        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g", lpparam.classLoader,
+                "com.dmzj.manhua.e.a",
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -79,13 +80,14 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
         /**
          * 获取头部组件并放入自定义按钮
+         * findviewbyid
          */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "f", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "e", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-                RelativeLayout z = (RelativeLayout) XposedHelpers.getObjectField(param.thisObject, "u");
+                RelativeLayout z = (RelativeLayout) XposedHelpers.getObjectField(param.thisObject, "v");
 
                 TextView textView = new TextView(AndroidAppHelper.currentApplication());
 
@@ -112,7 +114,7 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
                 textView.setOnClickListener(v -> {
 
-                    List o = (List) XposedHelpers.getObjectField(param.thisObject, "o");
+                    List o = (List) XposedHelpers.getObjectField(param.thisObject, "p");
 
                     show(o);
                 });
