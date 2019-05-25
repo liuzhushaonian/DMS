@@ -58,17 +58,14 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
     private String cover;
     private List<String> stringList;
     private Activity activity;
-    private Map<String,JSONObject> objectMap;
 
     private final static int CONNECT_TIMEOUT =60;
     private final static int READ_TIMEOUT=100;
     private final static int WRITE_TIMEOUT=60;
-    String description="";
+    private String description="";
 
-    String status="";
-    String letter="";
-
-    private SQLiteDatabase sqLiteDatabase;
+    private String status="";
+    private String letter="";
 
 
     @Override
@@ -104,33 +101,13 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                         return;
                     }
 
-//                    JSONObject jsonObject=new JSONObject();
-//
-//                    try {
-//                        jsonObject.put("ac",o.toString());
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
+                    if (queryData(id)){//查询是否已经存在，是则不反应
 
+                        Toast.makeText(activity, "别点了，这本漫画已经被收录了", Toast.LENGTH_SHORT).show();
 
+                        return;
 
-                    //获取chapters数组
-
-
-                    //获取数组内的对象
-
-
-
-
-
-
-//                    if (queryData(id)){//查询是否已经存在，是则不反应
-//
-//                        Toast.makeText(activity, "别点了，这本漫画已经被收录了", Toast.LENGTH_SHORT).show();
-//
-//                        return;
-//
-//                    }
+                    }
 
                     //避免id为0
                     if (id.equals("0")){
@@ -196,11 +173,10 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                         super.run();
 
                         try {
-                            sleep(2000);
+                            sleep(500);
 
                             Runnable runnable= () -> {
                                 z.setVisibility(View.VISIBLE);
-                                XposedBridge.log("显示下载按钮");
 
                             };
 
@@ -227,7 +203,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                 initList();//实例化
 
-                getLocalChar();
+
 
             }
         });
@@ -246,8 +222,6 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                 TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"Z");
 
 //                XposedHelpers.getIntField(param.thisObject,"ag");
-
-
 
                 new Thread(){
 
@@ -274,96 +248,9 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                     }
                 }.start();
 
-                z.setVisibility(View.VISIBLE);
-
-                Intent intent=activity.getIntent();
-
-
-                if (intent!=null){
-
-                    id=intent.getStringExtra("intent_extra_cid");
-                    name=intent.getStringExtra("intent_extra_cname");
-
-                }
-
-                String info=getLocalInfos();
-
-                if (info!=null&&!TextUtils.isEmpty(info)&&!info.equals("null")){
-
-                    new Thread(){
-                        @Override
-                        public void run() {
-                            super.run();
-
-
-                            Object object=getAcObject(info);
-
-                            Runnable runnable= () -> {
-                                if (object !=null){
-
-                                    //调用本地的方法渲染UI
-                                    XposedHelpers.callMethod(param.thisObject, "a", object, false);
-
-                                }
-                            };
-
-                            activity.runOnUiThread(runnable);
-                        }
-                    }.start();
-
-                }else {
-
-
-                    getLocalChar();
-
-//                XposedBridge.log("map--->>>"+objectMap.size());
-
-                    JSONObject object = getObject(id);
-
-                    if (object==null){
-                        return;
-                    }
-
-                    Object object1=getAcObject(object.toString());
-
-
-//                XposedBridge.log("map--->>>"+objectMap);
-
-                    if (object1 != null) {//表示已收藏该下架漫画，显示出来
-
-
-//                    XposedBridge.log("show---->>>"+object.toString());
-                        XposedHelpers.callMethod(param.thisObject, "a", object1, false);
-
-
-                        addLocalInfo(id,object.toString());
-
-
-                    }
-                }
 
             }
         });
-
-
-        /**
-         * 获取sqLiteDatabase实例，操作数据库
-         */
-        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g",
-                lpparam.classLoader, "com.dmzj.manhua.e.a",
-                new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        super.afterHookedMethod(param);
-
-                        Object object = param.args[0];
-
-                        sqLiteDatabase = (SQLiteDatabase) XposedHelpers.callMethod(object, "getWritableDatabase");
-
-
-                    }
-                });
-
 
     }
 
@@ -398,13 +285,6 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
-        }).setNeutralButton("上传章节信息",(dialog, which) -> {
-
-
-            getCharInfo();
-
 
 
         }).setNegativeButton("取消",(dialog, which) -> {
@@ -533,272 +413,5 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         }
 
     }
-
-    /**
-     * 获取章节信息
-     *
-     */
-    private void getCharInfo(){
-
-//        uploadAndSave(activity,jsonObject);//上传
-
-        Toast.makeText(activity, "正在上传，请稍后", Toast.LENGTH_SHORT).show();
-
-        new Thread(){
-
-            @Override
-            public void run() {
-                super.run();
-
-
-                if (sqLiteDatabase==null){
-                    return;
-                }
-
-                String sql="select * from commic_cache where commic_id = '"+id+"' limit 1";//查询数据库里的对应id的值
-
-                Cursor cursor=sqLiteDatabase.rawQuery(sql,null);
-
-                String info="";
-
-                if (cursor!=null){
-
-                    if (cursor.moveToFirst()){
-
-                        do {
-
-                            info=cursor.getString(cursor.getColumnIndex("commic_info"));
-
-
-                        }while (cursor.moveToNext());
-
-
-                    }
-
-
-                    cursor.close();
-
-                }
-
-
-
-                uploadJsonChapterFile(info);
-
-            }
-        }.start();
-
-
-
-//        XposedBridge.log("json--->>>"+jsonObject.toString());
-
-
-    }
-
-    /**
-     * 获取本地的章节信息
-     *
-     */
-    private void getLocalChar(){
-
-        if (this.objectMap==null) {
-
-
-            try {
-                File file = new File(AndroidAppHelper.currentApplication().getFilesDir(), "chapter");
-
-                StringBuilder builder = new StringBuilder();
-
-
-                if (file.exists()) {//文件存在，解析当前文件
-
-                    FileInputStream inputStream = AndroidAppHelper.currentApplication().openFileInput("chapter");
-
-                    InputStreamReader reader = new InputStreamReader(inputStream);
-                    BufferedReader buffReader = new BufferedReader(reader);
-                    String strTmp = "";
-                    while ((strTmp = buffReader.readLine()) != null) {
-//                    System.out.println(strTmp);
-                        builder.append(strTmp);
-                    }
-
-                    String json = builder.toString();//获取json信息
-                    this.objectMap = JsonUtil.getJsonObjectList(json);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-    }
-
-    /**
-     * 获取本地章节信息
-     * @param id 传入id
-     * @return 返回json对象
-     */
-    private JSONObject getObject(String id){
-
-        if (this.objectMap==null||id.equals("0")){
-
-            return null;
-
-        }
-
-        return objectMap.get(id);
-    }
-
-
-    private void uploadJsonChapterFile(String json){
-
-        File file=new File(AndroidAppHelper.currentApplication().getFilesDir(),"ccc");//生成文件
-
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(file));
-            out.write(json); // \r\n即为换行
-            out.flush(); // 把缓存区内容压入文件
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-//        MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(READ_TIMEOUT,TimeUnit.SECONDS)//设置读取超时时间
-                .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)//设置写的超时时间
-                .connectTimeout(CONNECT_TIMEOUT,TimeUnit.SECONDS)//设置连接超时时间
-                .build();
-
-        String url=HOST+"/v1/upload-chapter";
-
-//        XposedBridge.log("url--->>>"+url);
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("text/x-markdown"), file);
-
-
-        MultipartBody multipartBody = new MultipartBody.Builder()
-                // 设置type为"multipart/form-data"，不然无法上传参数
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("json", "cc", requestBody)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(multipartBody)
-                .build();
-
-
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-                e.printStackTrace();
-
-                XposedBridge.log("e---->>>>"+e.toString());
-
-                Runnable runnable= () -> Toast.makeText(activity, "发生了点意外，可能是后端服务器崩了~", Toast.LENGTH_SHORT).show();
-
-                activity.runOnUiThread(runnable);
-
-                file.delete();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
-
-                Runnable runnable= () -> Toast.makeText(activity, "上传成功", Toast.LENGTH_SHORT).show();
-
-                activity.runOnUiThread(runnable);
-
-                file.delete();
-
-            }
-        });
-    }
-
-
-    /**
-     * 优先
-     * 从本地获取信息并展示
-     * @return
-     */
-    private String getLocalInfos(){
-
-        if (sqLiteDatabase==null){
-            return null;
-        }
-
-        String sql="select * from commic_cache where commic_id = '"+id+"' limit 1";
-
-        Cursor cursor=sqLiteDatabase.rawQuery(sql,null);
-
-        String info="";
-
-        if (cursor!=null){
-
-            if (cursor.moveToFirst()){
-
-                do {
-
-                    info=cursor.getString(cursor.getColumnIndex("commic_info"));
-
-                }while (cursor.moveToNext());
-
-            }
-
-
-            cursor.close();
-        }
-
-        return info;
-
-    }
-
-
-    /**
-     * 将记录添加到本地，适用于章节显示
-     */
-    private void addLocalInfo(String id,String data){
-
-        if (sqLiteDatabase==null){
-            return;
-        }
-
-        String sql="select commic_id from commic_cache where commic_id = '"+id+"' limit 1";
-
-        Cursor cursor=sqLiteDatabase.rawQuery(sql,null);
-
-        if (cursor!=null){
-
-            if (!cursor.moveToFirst()){//表示为空
-
-                String s1="insert into commic_cache (commic_id,commic_info,version) values ('"+id+"','"+data+"',2)";
-
-                sqLiteDatabase.execSQL(s1);//插入数据
-            }
-
-            cursor.close();
-        }
-    }
-
-    private Object getAcObject(String info){
-
-        Object object=null;
-
-        try {
-            object= XposedHelpers
-                    .callStaticMethod(Class.forName("com.dmzj.manhua.utils.x"),
-                            "a",info,
-                            Class.forName("com.dmzj.manhua.beanv2.CartoonDescription"));//调用静态方法生成ac对象并返回
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return object;
-
-    }
-
 
 }

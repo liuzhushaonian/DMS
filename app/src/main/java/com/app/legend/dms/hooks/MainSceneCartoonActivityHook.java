@@ -71,15 +71,10 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-//                View s= (View) XposedHelpers.getObjectField(param.thisObject,"s");
-//                if (s!=null){
-//                    s.setVisibility(View.GONE);
-//                }
-
                 Activity activity= (Activity) param.thisObject;
 
                 FileUtil.createFile(activity,"comic",false);
-                FileUtil.createFile(activity,"chapter",false);
+//                FileUtil.createFile(activity,"chapter",false);
 
                 FileUtil.downloadFile(activity);
 
@@ -102,12 +97,6 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                         Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.h.a");
 
                         o=clazz.newInstance();
-//                        Method method=clazz.getDeclaredMethod("a",Object.class);
-//
-//                        method.setAccessible(true);
-//
-//                        method.invoke(o,"pp");
-//                       o= XposedHelpers.newInstance(Class.forName("com.dmzj.manhua.g.a"),  null);
 
                        XposedHelpers.callMethod(o,"a","pp");
 

@@ -259,35 +259,6 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
             swipeRefreshLayout.setOnRefreshListener(this::refreshData);
 
-//            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//                @Override
-//                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                    super.onScrolled(recyclerView, dx, dy);
-//
-////                    Log.d("scroll---->>>",dy+"");
-//
-//                    if (dy>1){//向上滑动，不显示搜索框
-//
-//                        hideEdit();
-//
-//                    }else if (dy<0){//向下滑动，显示搜索框
-//                        showEdit();
-//                    }
-//
-//                    if (adapter!=null&&adapter.getItemCount()<3){
-//
-//                        showEdit();
-//
-//                    }else if (!recyclerView.canScrollVertically(-1)){
-//
-//                        hideEdit();
-//
-//                    }
-//
-//
-//                }
-//            });
-
 
         }
 
@@ -432,6 +403,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
         refresh = true;
 
         FileUtil.deleteFile(activity, "comic");
+        FileUtil.deleteFile(activity, "chapter");
 
         initData();
 
