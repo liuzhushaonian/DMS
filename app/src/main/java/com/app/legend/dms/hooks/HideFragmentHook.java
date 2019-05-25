@@ -42,7 +42,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage {
 
-    private static final String CLASS = "com.dmzj.manhua.h.a";
+    private static final String CLASS = "com.dmzj.manhua.ui.uifragment.CartoonClassifyFragment";
 
     private static final String CLASS2 = "com.dmzj.manhua.ui.MainSceneCartoonActivity$1";//hook OnPageChangeListener
 
@@ -75,7 +75,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
 
         /*hook布局，一开始将布局给替换*/
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "b", LayoutInflater.class, ViewGroup.class, Bundle.class,
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "createContent",
+                LayoutInflater.class, ViewGroup.class, Bundle.class,
                 new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -92,7 +93,11 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
         });
 
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "a", Object.class, new XC_MethodReplacement() {
+        /**
+         * 占巢
+         * 接收对象开始
+         */
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "analysisData", Object.class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
@@ -107,9 +112,6 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
                 if (param.args[0] instanceof String) {//占巢成功，开始清空
                     isHook = true;
 
-//                    XposedBridge.log("isHook---->>>hook");
-
-
                     return null;
                 } else {
 
@@ -122,8 +124,10 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             }
         });
 
-        /**/
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "a", boolean.class, new XC_MethodReplacement() {
+        /**
+         *
+         */
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "loadData", boolean.class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
@@ -137,7 +141,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
         });
 
         /*获取上帝对象*/
-        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.MainSceneCartoonActivity", lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.MainSceneCartoonActivity",
+                lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -147,7 +152,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
         });
 
         /*监听滑动，在需要的地方切换isHook*/
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "onPageSelected", int.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "onPageSelected",
+                int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -382,9 +388,9 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
     private void openComicActivity(String id, String title) {
 
         try {
-            Class<?> c = loader.loadClass("com.dmzj.manhua.beanv2.AppBeanUtils");
+            Class<?> c = loader.loadClass("com.dmzj.manhua.utils.ActManager");
 
-            Method method = c.getDeclaredMethod("b", Activity.class, String.class, String.class);
+            Method method = c.getDeclaredMethod("startCartoonDescriptionActivity", Activity.class, String.class, String.class);
             method.invoke(null, activity, id, title);
 
         } catch (Exception e) {

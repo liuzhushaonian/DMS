@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.app.legend.dms.utils.Conf;
@@ -75,7 +76,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
             return;
         }
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, METHOD, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "initData", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -91,7 +92,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                 }
 
                 //获取封面imageview,id为R.id.img_cover
-                ImageView book= (ImageView) XposedHelpers.getObjectField(param.thisObject,"v");
+                ImageView book= (ImageView) XposedHelpers.getObjectField(param.thisObject,"img_cover");
 
                 book.setOnClickListener(v -> {
 
@@ -115,7 +116,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                         return;
                     }
 
-                    Object o=XposedHelpers.getObjectField(param.thisObject,"ac");//获取ac
+                    Object o=XposedHelpers.getObjectField(param.thisObject,"description");//获取ac
 
 
                     if (o!=null) {
@@ -125,7 +126,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                     }
 
                     //获取作者的textview，id为R.id.txt_first
-                    TextView t = (TextView) XposedHelpers.getObjectField(param.thisObject,"w");
+                    TextView t = (TextView) XposedHelpers.getObjectField(param.thisObject,"txt_first");
 
 
                     if (t!=null) {
@@ -133,7 +134,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                     }
 
                     //获取状态 R.id.txt_fifth
-                    TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"A");
+                    TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"txt_fifth");
 
                     if (z!=null){
 
@@ -154,72 +155,46 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         });
 
 
-        /**
-         * 显示下载按钮
-         */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "f", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-
-                activity= (Activity) param.thisObject;
-
-                TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"Z");
-
-                new Thread(){
-
-                    @Override
-                    public void run() {
-                        super.run();
-
-                        try {
-                            sleep(500);
-
-                            Runnable runnable= () -> {
-                                z.setVisibility(View.VISIBLE);
-
-                            };
-
-                            activity.runOnUiThread(runnable);
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }.start();
-
-
-            }
-        });
-
-
         XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "onResume", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-                activity= (Activity) param.thisObject;
+//                activity= (Activity) param.thisObject;
 
                 initList();//实例化
-
-
 
             }
         });
 
 
         /**
-         * 本地渲染
+         * 刷新
+         * 将锁住标记改为0
+         * 将下载按钮显示
+         *
          *
          */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "c", boolean.class, new XC_MethodHook() {
+
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "refresh", boolean.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                activity= (Activity) param.thisObject;
+            }
+        });
+
+
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "refresh", boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-                Activity activity= (Activity) param.thisObject;
-                TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"Z");
+                activity= (Activity) param.thisObject;
+                TextView z= (TextView) XposedHelpers.getObjectField(param.thisObject,"action");
+
+                LinearLayout layout_chapter_layout= (LinearLayout) XposedHelpers.getObjectField(param.thisObject,"layout_chapter_layout");
+
 
 //                XposedHelpers.getIntField(param.thisObject,"ag");
 
@@ -235,7 +210,9 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                             Runnable runnable= () -> {
                                 z.setVisibility(View.VISIBLE);
                                 //更改下架漫画的标记，使之可以正常阅读
-                                XposedHelpers.setIntField(param.thisObject,"ag",0);
+                                XposedHelpers.setIntField(param.thisObject,"isLock",0);
+                                layout_chapter_layout.setVisibility(View.VISIBLE);
+
 
                             };
 
@@ -251,6 +228,45 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
             }
         });
+
+//        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.CartoonInstructionActivity$1",
+//                lpparam.classLoader, "onReceiveData", String.class, new XC_MethodHook() {
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//
+//                Object object=XposedHelpers.getObjectField(activity,"description");
+//
+//                List list= (List) XposedHelpers.getObjectField(object,"chapters");
+//
+//                if (list.size()>0){
+//
+//                    Object o=list.get(0);
+//
+//                    List l= (List) XposedHelpers.getObjectField(o,"data");
+//
+//                    XposedBridge.log("l--->>>"+l.size());
+//
+//                }
+//
+//
+//
+//            }
+//        });
+//
+//        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "generateChapterLayout",
+//                boolean.class, int.class, "com.dmzj.manhua.bean.CartoonDescription.Chapter",
+//                int.class, new XC_MethodHook() {
+//                    @Override
+//                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                        super.beforeHookedMethod(param);
+//
+//                        boolean z= (boolean) param.args[0];
+//
+//                        XposedBridge.log("z--->>>"+z);
+//
+//                    }
+//                });
 
     }
 

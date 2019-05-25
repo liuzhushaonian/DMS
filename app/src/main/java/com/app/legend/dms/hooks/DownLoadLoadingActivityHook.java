@@ -24,7 +24,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class DownLoadLoadingActivityHook extends BaseHook implements IXposedHookLoadPackage {
 
-    private static final String CLASS = "com.dmzj.manhua.ui.DownLoadLoadingActivity";
+    private static final String CLASS = "com.dmzj.manhua.download.DownLoadLoadingActivity";
 
     private Activity activity;
 
@@ -39,7 +39,7 @@ public class DownLoadLoadingActivityHook extends BaseHook implements IXposedHook
             return;
         }
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "f", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "initData", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -61,8 +61,8 @@ public class DownLoadLoadingActivityHook extends BaseHook implements IXposedHook
         /**
          * 获取sqLiteDatabase实例，操作数据库
          */
-        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g",
-                lpparam.classLoader, "com.dmzj.manhua.e.a", new XC_MethodHook() {
+        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.dbabst.db.DownLoadWrapperTable",
+                lpparam.classLoader, "com.dmzj.manhua.dbabst.AbstractDBHelper", new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         super.afterHookedMethod(param);

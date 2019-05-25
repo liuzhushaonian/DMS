@@ -28,7 +28,7 @@ import okhttp3.Response;
 
 public class MainSceneMineEnActivityHook extends BaseHook implements IXposedHookLoadPackage {
 
-    private static final String CLASS="com.dmzj.manhua.ui.mine.activity.MainSceneMineEnActivity";
+    private static final String CLASS="com.dmzj.manhua.ui.home.MainSceneMineEnActivity";
 
 
 
@@ -44,7 +44,7 @@ public class MainSceneMineEnActivityHook extends BaseHook implements IXposedHook
         /**
          * findviewbyid，初始化控件的时候
          */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "e", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "findViews", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);

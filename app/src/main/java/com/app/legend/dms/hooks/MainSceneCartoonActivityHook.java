@@ -23,7 +23,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
     private static final String CLASS2="com.dmzj.manhua.ui.MainSceneCartoonActivity";
 
-    private static final String CLASS3="com.dmzj.manhua.ui.MainSceneCartoonActivity$a";
+    private static final String CLASS3="com.dmzj.manhua.ui.MainSceneCartoonActivity$MyAdapter";
 
 
     @Override
@@ -32,7 +32,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             return;
         }
         /*添加封印界面*/
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, METHOD, int.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "getNaviItem", int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -41,20 +41,17 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
                 Class<?> c=lpparam.classLoader.loadClass(CLASS);
 
-                Field f=c.getDeclaredField("a");
+                Field f=c.getDeclaredField("tab_main_mine_frag_names");
 
                 f.setAccessible(true);
 
                 f.set(param.thisObject,arrays);//赋值
 
 
-
-
-
             }
         });
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "a",new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "getCount",new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -66,7 +63,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
         * 仔细想过了，还是不去掉，我的目的不是断大妈财路
         *
         * */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "n", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "generateMainLayout", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -94,11 +91,11 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                     Object o=null;
 
                     try {
-                        Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.h.a");
+                        Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.ui.uifragment.CartoonClassifyFragment");
 
                         o=clazz.newInstance();
 
-                       XposedHelpers.callMethod(o,"a","pp");
+                       XposedHelpers.callMethod(o,"analysisData","pp");
 
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();

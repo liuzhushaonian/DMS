@@ -36,7 +36,7 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
 //    private static final String CLASS = "com.dmzj.manhua.ui.MineCartoonDownActivity";
 
-    private static final String CLASS2 = "com.dmzj.manhua.ui.DownLoadManageAbstractActivity";
+    private static final String CLASS2 = "com.dmzj.manhua.download.DownLoadManageAbstractActivity";
 
 //    private static final String CLASS3 = "com.dmzj.manhua.e.b";
 //
@@ -61,8 +61,8 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
         /**
          * 获取sqLiteDatabase实例，操作数据库
          */
-        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.e.a.g", lpparam.classLoader,
-                "com.dmzj.manhua.e.a",
+        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.dbabst.db.DownLoadWrapperTable", lpparam.classLoader,
+                "com.dmzj.manhua.dbabst.AbstractDBHelper",
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -82,12 +82,12 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
          * 获取头部组件并放入自定义按钮
          * findviewbyid
          */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "e", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "findViews", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
-                RelativeLayout z = (RelativeLayout) XposedHelpers.getObjectField(param.thisObject, "v");
+                RelativeLayout z = (RelativeLayout) XposedHelpers.getObjectField(param.thisObject, "layout_editstatus_oprations");
 
                 TextView textView = new TextView(AndroidAppHelper.currentApplication());
 
@@ -114,7 +114,7 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
                 textView.setOnClickListener(v -> {
 
-                    List o = (List) XposedHelpers.getObjectField(param.thisObject, "p");
+                    List o = (List) XposedHelpers.getObjectField(param.thisObject, "manageWrappers");
 
                     show(o);
                 });
