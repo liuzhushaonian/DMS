@@ -211,7 +211,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                                 z.setVisibility(View.VISIBLE);
                                 //更改下架漫画的标记，使之可以正常阅读
                                 XposedHelpers.setIntField(param.thisObject,"isLock",0);
-                                layout_chapter_layout.setVisibility(View.VISIBLE);
+                                layout_chapter_layout.setVisibility(View.VISIBLE);//显示章节
 
 
                             };
@@ -228,45 +228,6 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
             }
         });
-
-//        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.CartoonInstructionActivity$1",
-//                lpparam.classLoader, "onReceiveData", String.class, new XC_MethodHook() {
-//            @Override
-//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//                super.afterHookedMethod(param);
-//
-//                Object object=XposedHelpers.getObjectField(activity,"description");
-//
-//                List list= (List) XposedHelpers.getObjectField(object,"chapters");
-//
-//                if (list.size()>0){
-//
-//                    Object o=list.get(0);
-//
-//                    List l= (List) XposedHelpers.getObjectField(o,"data");
-//
-//                    XposedBridge.log("l--->>>"+l.size());
-//
-//                }
-//
-//
-//
-//            }
-//        });
-//
-//        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "generateChapterLayout",
-//                boolean.class, int.class, "com.dmzj.manhua.bean.CartoonDescription.Chapter",
-//                int.class, new XC_MethodHook() {
-//                    @Override
-//                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//                        super.beforeHookedMethod(param);
-//
-//                        boolean z= (boolean) param.args[0];
-//
-//                        XposedBridge.log("z--->>>"+z);
-//
-//                    }
-//                });
 
     }
 
