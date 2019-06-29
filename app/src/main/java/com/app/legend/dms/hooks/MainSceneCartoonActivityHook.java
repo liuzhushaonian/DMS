@@ -4,6 +4,9 @@ package com.app.legend.dms.hooks;
 import android.app.Activity;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
+
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -125,6 +128,15 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
             }
         });
+
+        //禁止弹出强制升级的窗口
+        XposedHelpers.findAndHookMethod("com.dmzj.manhua.helper.AppUpDataHelper", lpparam.classLoader, "onVersionDetached", JSONObject.class,
+                Activity.class, Class.class, boolean.class, boolean.class, new XC_MethodReplacement() {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                        return null;
+                    }
+                });
 
 
     }
