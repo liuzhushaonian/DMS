@@ -83,11 +83,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
                 super.afterHookedMethod(param);
                 decorView = (ViewGroup) param.getResult();//获取返回的view
 
-//                XposedBridge.log("info---->>>>"+decorView);
-//
-//                XposedBridge.log("view----->>>"+param.getResult());
 
-//                resume();
 
             }
         });
@@ -101,13 +97,6 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
-//                XposedBridge.log("obj----->>>>"+param.args[0]);
-//
-//                XposedBridge.log("instance---->>>>"+param.thisObject);
-
-//                int s= (int) param.args[0];
-//
-//                if (param.args[0] instanceof Integer)
 
                 if (param.args[0] instanceof String) {//占巢成功，开始清空
                     isHook = true;
@@ -190,14 +179,6 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
      */
     private void initView() {
 
-
-//        if (linearLayout!=null&&linearLayout.getVisibility()==View.VISIBLE){
-//
-//            linearLayout.setVisibility(View.VISIBLE);
-//
-//            XposedBridge.log("init---->>>显示！");
-//
-//        }else {
 
         decorView.removeView(linearLayout);
 

@@ -16,9 +16,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        webView=findViewById(R.id.webview);
-
-        webView.loadUrl("https://github.com/liuzhushaonian/release/blob/master/README.md");
+//        webView=findViewById(R.id.webview);
+//
+//        webView.loadUrl("https://github.com/liuzhushaonian/release/blob/master/README.md");
 
     }
 

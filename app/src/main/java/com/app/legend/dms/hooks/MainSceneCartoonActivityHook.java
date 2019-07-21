@@ -4,10 +4,7 @@ package com.app.legend.dms.hooks;
 import android.app.Activity;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
-
 import org.json.JSONObject;
-
-import java.lang.reflect.Field;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
@@ -42,14 +39,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
                 String[] arrays = new String[]{"推荐", "封印", "更新", "分类", "排行", "专题"};
 
-                Class<?> c=lpparam.classLoader.loadClass(CLASS);
-
-                Field f=c.getDeclaredField("tab_main_mine_frag_names");
-
-                f.setAccessible(true);
-
-                f.set(param.thisObject,arrays);//赋值
-
+                XposedHelpers.setObjectField(param.thisObject,"tab_main_mine_frag_names",arrays);
 
             }
         });
@@ -134,6 +124,9 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                 Activity.class, Class.class, boolean.class, boolean.class, new XC_MethodReplacement() {
                     @Override
                     protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+
+                        XposedBridge.log("release--->>阻止升级弹窗！");
+
                         return null;
                     }
                 });
