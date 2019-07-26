@@ -48,6 +48,8 @@ public class BrowseActivityAncestorsHook extends BaseHook implements IXposedHook
 
                 TextView textView= (TextView) XposedHelpers.getObjectField(param.thisObject,"page_navigation");
 
+                initOffset(textView);
+
                 textView.setOnLongClickListener(v -> {
 
                     offsetBottomText(textView);
@@ -152,7 +154,7 @@ public class BrowseActivityAncestorsHook extends BaseHook implements IXposedHook
 
                 sharedPreferences.edit().putInt("ttt",20).apply();
 
-                Toast.makeText(activity, "长按可恢复原位", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(activity, "长按可恢复原位", Toast.LENGTH_SHORT).show();
 
                 break;
 
@@ -167,12 +169,34 @@ public class BrowseActivityAncestorsHook extends BaseHook implements IXposedHook
 
                 sharedPreferences.edit().putInt("ttt",10).apply();
 
-                Toast.makeText(activity, "长按可偏移", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(activity, "长按可偏移", Toast.LENGTH_SHORT).show();
 
                 break;
 
         }
 
+
+    }
+
+    /**
+     * 初始化
+     * @param textView
+     */
+    private void initOffset(TextView textView){
+
+        SharedPreferences sharedPreferences=AndroidAppHelper.currentApplication().getSharedPreferences(Conf.SHARED,Context.MODE_PRIVATE);
+
+        int type=sharedPreferences.getInt("ttt",10);
+
+        if (type==20){//需要偏移
+
+            FrameLayout.LayoutParams layoutParams= (FrameLayout.LayoutParams) textView.getLayoutParams();
+
+            layoutParams.rightMargin= (int) getDip(30, AndroidAppHelper.currentApplication());//向左偏移30dp，避免曲屏看不全
+
+            textView.setLayoutParams(layoutParams);
+
+        }
 
     }
 

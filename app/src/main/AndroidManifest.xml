@@ -24,31 +24,31 @@
             android:name="xposedminversion"
             android:value="82" />
 
-        <activity android:name="com.app.legend.dms.MainActivity"
-            android:label="@string/app_name"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <!--<activity android:name="com.app.legend.dms.MainActivity"-->
+            <!--android:label="@string/app_name"-->
+            <!--&gt;-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
+                <!--<category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />-->
 
-            </intent-filter>
-        </activity>
+            <!--</intent-filter>-->
+        <!--</activity>-->
 
-        <activity-alias
-            android:label="@string/app_name"
-            android:name="com.app.legend.dms.MainActivityAlias"
-            android:targetActivity="com.app.legend.dms.MainActivity"
-            android:enabled="true"
-            android:icon="@drawable/ll"
-            >
+        <!--<activity-alias-->
+            <!--android:label="@string/app_name"-->
+            <!--android:name="com.app.legend.dms.MainActivityAlias"-->
+            <!--android:targetActivity="com.app.legend.dms.MainActivity"-->
+            <!--android:enabled="true"-->
+            <!--android:icon="@drawable/ll"-->
+            <!--&gt;-->
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
 
-        </activity-alias>
+        <!--</activity-alias>-->
 
 
     </application>
