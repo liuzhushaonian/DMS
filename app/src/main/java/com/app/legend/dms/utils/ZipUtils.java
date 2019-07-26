@@ -1,11 +1,22 @@
 package com.app.legend.dms.utils;
 
+import android.app.AndroidAppHelper;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.widget.Toast;
 
 import com.app.legend.dms.model.ExportComic;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.io.ZipInputStream;
+import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.UnzipParameters;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
@@ -14,6 +25,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,8 +193,51 @@ public class ZipUtils {
     }
 
 
+    /**
+     * 修复官方保存本地图片FC，哎，我终究沦落到给官方修bug了吗？
+     * 
+     * 
+     * @param zipFile zip文件路径
+     * @param oneName 需要保存的图片在zip中的名字，0.jpg之类的
+     * @param savePath 保存的路径，默认不改，且需要将其插入媒体数据库内
+     */
+    public static boolean fixSaveLocalImage(String zipFile, String oneName, String savePath, Context context){
 
+        try {
+            ZipFile zipFile1=new ZipFile(zipFile);
 
+            FileHeader header=zipFile1.getFileHeader(oneName);
+
+            ZipInputStream zipInputStream=zipFile1.getInputStream(header);
+
+            OutputStream outputStream=new FileOutputStream(savePath);
+
+            Bitmap bitmap=BitmapFactory.decodeStream(zipInputStream);
+
+            boolean r= bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+
+            if (r) {//如果保存成功，则插入数据库
+
+                MediaScannerConnection.scanFile(context, new String[]{savePath}, null,
+                        (path, uri1) -> {
+                            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            mediaScanIntent.setData(uri1);
+                            context.sendBroadcast(mediaScanIntent);
+                        });
+            }
+
+            outputStream.close();
+            zipInputStream.close();
+
+            return r;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return false;
+        }
+
+    }
 
 
 }
