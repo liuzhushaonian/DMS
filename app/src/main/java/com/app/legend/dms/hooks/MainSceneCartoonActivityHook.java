@@ -18,12 +18,12 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
  */
 public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHookLoadPackage {
 
-    private static final String CLASS="com.dmzj.manhua.ui.MainSceneCartoonActivity$4";
+    private static final String CLASS="com.dmzj.manhua.ui.home.MainSceneCartoonActivity$4";
     private static final String METHOD="a";//有个入参，类型是int
 
-    private static final String CLASS2="com.dmzj.manhua.ui.MainSceneCartoonActivity";
+    private static final String CLASS2="com.dmzj.manhua.ui.home.MainSceneCartoonActivity";
 
-    private static final String CLASS3="com.dmzj.manhua.ui.MainSceneCartoonActivity$MyAdapter";
+    private static final String CLASS3="com.dmzj.manhua.ui.home.MainSceneCartoonActivity$MyAdapter";
 
 
     @Override

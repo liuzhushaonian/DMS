@@ -44,7 +44,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
     private static final String CLASS = "com.dmzj.manhua.ui.uifragment.CartoonClassifyFragment";
 
-    private static final String CLASS2 = "com.dmzj.manhua.ui.MainSceneCartoonActivity$1";//hook OnPageChangeListener
+    private static final String CLASS2 = "com.dmzj.manhua.ui.home.MainSceneCartoonActivity$1";//hook OnPageChangeListener
 
     private boolean isHook = false;//标记是否被hook，用于判断是否占有这个class
 
@@ -130,7 +130,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
         });
 
         /*获取上帝对象*/
-        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.MainSceneCartoonActivity",
+        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.home.MainSceneCartoonActivity",
                 lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
