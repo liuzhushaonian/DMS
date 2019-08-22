@@ -75,7 +75,7 @@ public class HookLoader implements IXposedHookLoadPackage {
 
         init(MineCartoonDownActivityHook .class.getName());
 
-        init(DownLoadLoadingActivityHook.class.getName());
+//        init(DownLoadLoadingActivityHook.class.getName());
 
         init(BrowseActivityAncestorsHook.class.getName());
 

@@ -22,6 +22,12 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+/**
+ * 废弃该class
+ * 该class原本作用好像是记录下载的漫画并显示，但大妈封杀后连资源都不允许下载，该class失去了原本的作用，外加上会影响原本的下载，所以去掉
+ */
+
+@Deprecated
 public class DownLoadLoadingActivityHook extends BaseHook implements IXposedHookLoadPackage {
 
     private static final String CLASS = "com.dmzj.manhua.download.DownLoadLoadingActivity";

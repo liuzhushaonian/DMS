@@ -253,9 +253,9 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
                         jsonObject.put(Conf.COMIC_ID,id);
                         jsonObject.put(Conf.AUTHOR,author);
                         jsonObject.put(Conf.COMIC_BOOK,cover);
-                        jsonObject.put("first_letter",letter);
-                        jsonObject.put("status",status);
-                        jsonObject.put("description",description);
+//                        jsonObject.put("first_letter",letter);
+//                        jsonObject.put("status",status);
+//                        jsonObject.put("description",description);
 
                         uploadAndSave(activity,jsonObject);
 

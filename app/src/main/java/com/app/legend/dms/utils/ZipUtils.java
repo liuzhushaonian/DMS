@@ -49,6 +49,9 @@ public class ZipUtils {
 
         name=name.replace("！","");
         name=name.replace(" ","");
+        if (name.startsWith("+")){
+            name=name.replace("+","");
+        }
 
         File file=new File(PATH,name+".zip");
 
