@@ -8,6 +8,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Environment;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -18,7 +20,9 @@ import com.app.legend.dms.model.ExportComic;
 import com.app.legend.dms.model.LocalComic;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.ZipUtils;
-import net.lingala.zip4j.core.ZipFile;
+
+import net.lingala.zip4j.ZipFile;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +251,8 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
         Cursor cursor = this.sqLiteDatabase.rawQuery(sql, null);
 
+        String p=AndroidAppHelper.currentApplication().getExternalFilesDir(null).getAbsolutePath();
+
         if (cursor != null) {
 
             if (cursor.moveToFirst()) {
@@ -254,6 +260,7 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
                 do {
 
                     String path = cursor.getString(cursor.getColumnIndex("localpath"));
+
                     String chapterId = cursor.getString(cursor.getColumnIndex("chapterid"));
                     String chapter_title = cursor.getString(cursor.getColumnIndex("chapter_title"));
                     String title = cursor.getString(cursor.getColumnIndex("title"));
@@ -290,14 +297,13 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
         for (LocalComic comic : localComicList) {
 
-
             ZipFile zipFile = ZipUtils.createZip(comic.getTitle());
-
-            if (zipFile != null) {
 
                 switch (type) {
 
                     case ZIP:
+
+//                        Log.d("pp---->>>",AndroidAppHelper.currentApplication().getExternalFilesDir(null).getAbsolutePath());
 
                         ZipUtils.addZipFile(zipFile, comic.getExportComicList());
                         break;
@@ -310,7 +316,6 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
                 }
 
-            }
         }
 
 

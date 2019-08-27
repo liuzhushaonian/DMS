@@ -53,6 +53,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     compileOnly 'org.projectlombok:lombok:1.18.8'
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
-    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.3.2'
+    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.1.2'
 
 }
