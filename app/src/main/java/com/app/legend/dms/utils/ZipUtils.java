@@ -51,7 +51,7 @@ public class ZipUtils {
         File file=new File(PATH,name+".zip");
 
         if (!file.getParentFile().exists()){
-            file.mkdirs();
+            file.getParentFile().mkdirs();
         }
 
         return new ZipFile(file);
@@ -84,7 +84,7 @@ public class ZipUtils {
 
             String path= comic.getPath();
 
-            if (path.endsWith("zip")) {
+            if (path!=null&&path.endsWith(".zip")) {
 
                 try {
 
@@ -108,9 +108,7 @@ public class ZipUtils {
                     e.printStackTrace();
                 }
             }
-
         }
-
     }
 
 
@@ -141,9 +139,11 @@ public class ZipUtils {
 
             String path=comic.getPath();
 
-            if (path!=null&&path.endsWith("zip")) {
+            if (path!=null&&path.endsWith(".zip")) {
 
-                String folder=PATH+"/"+comic.getBigTitle()+"_"+comic.getCharTitle();
+                String n=zipFile.getFile().getName().replace(".zip","");
+
+                String folder=PATH+"/"+n+"/"+comic.getBigTitle()+"_"+comic.getCharTitle();
 
                 File file=new File(folder);
 
@@ -165,7 +165,7 @@ public class ZipUtils {
                     e.printStackTrace();
                 }finally {
 
-                    deleteDirWihtFile(file);
+                    deleteDirWihtFile(file.getParentFile());
 
 //                    System.out.println("最后删除文件夹");
 

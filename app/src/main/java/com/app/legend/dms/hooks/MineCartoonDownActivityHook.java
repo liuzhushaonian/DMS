@@ -20,12 +20,15 @@ import com.app.legend.dms.model.ExportComic;
 import com.app.legend.dms.model.LocalComic;
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.ZipUtils;
-
 import net.lingala.zip4j.ZipFile;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -42,9 +45,6 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
     private static final String CLASS2 = "com.dmzj.manhua.download.DownLoadManageAbstractActivity";
 
-//    private static final String CLASS3 = "com.dmzj.manhua.e.b";
-//
-//    private static final String CLASS4 = "com.dmzj.manhua.service.DownLoadService";
 
     private Activity activity;
     private SQLiteDatabase sqLiteDatabase;
@@ -53,6 +53,15 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
     private static final int ZIP = 0x00100;
     private static final int FOLDER = 0x00300;
+
+
+    private int CORE_COUNT = Runtime.getRuntime().availableProcessors();
+    private int CORE_POOL_SIZE = CORE_COUNT + 1;
+    private int CORE_POOL_MAX_SIZE = CORE_COUNT * 2 + 1;
+
+    private ThreadPoolExecutor poolExecutor;
+
+
 
 
     @Override
@@ -122,6 +131,8 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
                     show(o);
                 });
+
+                initThreadPoolExecutor();//初始化线程池
 
             }
         });
@@ -287,6 +298,8 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
     }
 
+    int s=0;
+
 
     /**
      * 导出章节并打包为zip
@@ -295,37 +308,63 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
      */
     private void startExport(List<LocalComic> localComicList, int type) {
 
+        s=0;
+
         for (LocalComic comic : localComicList) {
 
-            ZipFile zipFile = ZipUtils.createZip(comic.getTitle());
+            Runnable runnable= () -> {
+                threadExport(comic,type,localComicList.size());
+            };
 
-                switch (type) {
-
-                    case ZIP:
-
-//                        Log.d("pp---->>>",AndroidAppHelper.currentApplication().getExternalFilesDir(null).getAbsolutePath());
-
-                        ZipUtils.addZipFile(zipFile, comic.getExportComicList());
-                        break;
-
-                    case FOLDER:
-
-                        ZipUtils.addFolderFile(zipFile, comic.getExportComicList());
-                        break;
-
-
-                }
-
+            poolExecutor.execute(runnable);
         }
 
-
-        Runnable runnable = () -> Toast.makeText(AndroidAppHelper.currentApplication(), "导出完成，本次导出" + localComicList.size() + "本漫画", Toast.LENGTH_SHORT).show();
-
-        activity.runOnUiThread(runnable);
+//        Runnable runnable = () -> Toast.makeText(AndroidAppHelper.currentApplication(), "导出完成，本次导出" + localComicList.size() + "本漫画", Toast.LENGTH_LONG).show();
+//
+//        activity.runOnUiThread(runnable);
 
 //        XposedBridge.log("size---->>" + localComicList.size());
 
     }
+
+    private void threadExport(LocalComic comic,int type,int size){
+
+        ZipFile zipFile = ZipUtils.createZip(comic.getTitle());
+
+        switch (type) {
+
+            case ZIP:
+
+//                        Log.d("pp---->>>",AndroidAppHelper.currentApplication().getExternalFilesDir(null).getAbsolutePath());
+
+                ZipUtils.addZipFile(zipFile, comic.getExportComicList());
+                break;
+
+            case FOLDER:
+
+                ZipUtils.addFolderFile(zipFile, comic.getExportComicList());
+                break;
+        }
+
+//        XposedBridge.log("export----->>>>"+comic.getTitle()+"thread--->>>"+Thread.currentThread().getName());
+
+        s++;
+
+        if (s>=size){
+
+            Runnable r= () -> {
+                Toast.makeText(activity, "导出完成，本次导出"+size+"本漫画", Toast.LENGTH_SHORT).show();
+            };
+
+            activity.runOnUiThread(r);
+
+            s=0;//复位
+        }
+
+    }
+
+
+
 
     /**
      * 显示弹窗
@@ -380,4 +419,13 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
                 context.getResources().getDisplayMetrics());
 
     }
+
+    private void initThreadPoolExecutor(){
+
+        BlockingQueue<Runnable> runnableBlockingQueue = new LinkedBlockingQueue<>();
+        int KEEP_ALIVE = 10;
+        poolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_MAX_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, runnableBlockingQueue);
+
+    }
+
 }
