@@ -2,6 +2,8 @@ package com.app.legend.dms.hooks;
 
 
 import android.app.Activity;
+import android.support.v4.view.ViewPager;
+
 import com.app.legend.dms.utils.Conf;
 import com.app.legend.dms.utils.FileUtil;
 import org.json.JSONObject;
@@ -130,6 +132,23 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
                         return null;
                     }
                 });
+
+
+        /**
+         * 设置viewpager的limit，避免不显示
+         */
+        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "initData", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+
+                Object viewPager= XposedHelpers.getObjectField(param.thisObject,"mPager");
+
+                XposedHelpers.callMethod(viewPager,"setOffscreenPageLimit",2);
+
+//                XposedBridge.log("设置成功！！！！！！！");
+            }
+        });
 
 
     }

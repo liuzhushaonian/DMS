@@ -1,6 +1,7 @@
 package com.app.legend.dms.hooks;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 import com.app.legend.dms.utils.Conf;
 
@@ -43,6 +44,17 @@ public class CartoonInstrctionListActivityHook extends BaseHook implements IXpos
                    XposedHelpers.setIntField(activity,"isLock",-1);
 
                 }
+            }
+        });
+
+
+        XposedHelpers.findAndHookMethod(Activity.class, "onCreate", Bundle.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                super.afterHookedMethod(param);
+
+                XposedBridge.log(param.thisObject.toString());
+
             }
         });
 
