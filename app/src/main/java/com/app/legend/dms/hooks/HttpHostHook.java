@@ -9,7 +9,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 /**
  * 测试使用
  */
-public class HttpHostHook extends BaseHook implements IXposedHookLoadPackage {
+public class HttpHostHook implements IXposedHookLoadPackage {
 
     private static final String CLASS="cz.msebera.android.httpclient.l";
 
@@ -42,4 +42,5 @@ public class HttpHostHook extends BaseHook implements IXposedHookLoadPackage {
         });
 
     }
+
 }

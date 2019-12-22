@@ -44,37 +44,49 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 //    private static final String CLASS = "com.dmzj.manhua.ui.MineCartoonDownActivity";
 
     private static final String CLASS2 = "com.dmzj.manhua.download.DownLoadManageAbstractActivity";
-
-
     private Activity activity;
     private SQLiteDatabase sqLiteDatabase;
-
     private static final String table = "downloadwrapper";//表的名字
-
     private static final int ZIP = 0x00100;
     private static final int FOLDER = 0x00300;
-
-
     private int CORE_COUNT = Runtime.getRuntime().availableProcessors();
     private int CORE_POOL_SIZE = CORE_COUNT + 1;
     private int CORE_POOL_MAX_SIZE = CORE_COUNT * 2 + 1;
-
     private ThreadPoolExecutor poolExecutor;
-
-
 
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
-        if (!lpparam.packageName.equals(Conf.PACKAGE)) {
-            return;
+        if (lpparam.packageName.equals(Conf.PACKAGE)){
+
+
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+
+                    Context context= (Context) param.args[0];
+
+                    classLoader=context.getClassLoader();
+
+                    XposedBridge.log("class--->>>获取成功");
+
+                    init(classLoader);
+
+                }
+            });
+
         }
 
+    }
+
+    @Override
+    protected void init(ClassLoader classLoader) {
         /**
          * 获取sqLiteDatabase实例，操作数据库
          */
-        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.dbabst.db.DownLoadWrapperTable", lpparam.classLoader,
+        XposedHelpers.findAndHookConstructor("com.dmzj.manhua.dbabst.db.DownLoadWrapperTable", classLoader,
                 "com.dmzj.manhua.dbabst.AbstractDBHelper",
                 new XC_MethodHook() {
                     @Override
@@ -95,7 +107,7 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
          * 获取头部组件并放入自定义按钮
          * findviewbyid
          */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "findViews", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, classLoader, "findViews", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -108,7 +120,7 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
                         ViewGroup.LayoutParams.MATCH_PARENT);
 
                 int id = AndroidAppHelper.currentApplication().getResources().getIdentifier("txt_select_shower",
-                        "id", lpparam.packageName);
+                        "id", AndroidAppHelper.currentPackageName());
 
                 layoutParams.addRule(RelativeLayout.RIGHT_OF, id);
 
@@ -136,8 +148,6 @@ public class MineCartoonDownActivityHook extends BaseHook implements IXposedHook
 
             }
         });
-
-
     }
 
     private void show(List list) {

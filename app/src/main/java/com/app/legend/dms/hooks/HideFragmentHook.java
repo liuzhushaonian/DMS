@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +41,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 /**
  * 最邪恶之hook——鸠占鹊巢
  */
-public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage {
+public class HideFragmentHook extends BaseHook{
 
     private static final String CLASS = "com.dmzj.manhua.ui.uifragment.CartoonClassifyFragment";
 
@@ -66,40 +67,69 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
     private Activity activity;//上帝对象context
 
+//    @Override
+//    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+//
+//        if (lpparam.packageName.equals(Conf.PACKAGE)){
+//
+//
+//            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+//                @Override
+//                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                    super.afterHookedMethod(param);
+//
+//                    Context context= (Context) param.args[0];
+//
+//                    classLoader=context.getClassLoader();
+//
+//                    XposedBridge.log("class--->>>获取成功");
+//
+//                    init(classLoader);
+//
+//                }
+//            });
+//
+//        }
+//
+//    }
+
+    public void start(ClassLoader classLoader,Activity activity){
+
+        this.activity=activity;
+        init(classLoader);
+
+    }
+
+
+
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-
-        if (!lpparam.packageName.equals(Conf.PACKAGE)) {
-            return;
-        }
-
-
+    protected void init(ClassLoader classLoader) {
         /*hook布局，一开始将布局给替换*/
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "createContent",
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "createContent",
                 LayoutInflater.class, ViewGroup.class, Bundle.class,
                 new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                decorView = (ViewGroup) param.getResult();//获取返回的view
-
-
-
-            }
-        });
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        super.afterHookedMethod(param);
+                        decorView = (ViewGroup) param.getResult();//获取返回的view
+                    }
+                });
 
 
         /**
          * 占巢
          * 接收对象开始
          */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "analysisData", Object.class, new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "analysisData", Object.class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
+//                XposedBridge.log("jjsjsjs---->>>"+param.args[0]);
 
                 if (param.args[0] instanceof String) {//占巢成功，开始清空
                     isHook = true;
+
+//                    initView();
 
                     return null;
                 } else {
@@ -116,7 +146,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
         /**
          *
          */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "loadData", boolean.class, new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "loadData", boolean.class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
@@ -129,49 +159,40 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             }
         });
 
-        /*获取上帝对象*/
-        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.home.MainSceneCartoonActivity",
-                lpparam.classLoader, "onCreate", Bundle.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-
-                activity = (Activity) param.thisObject;
-            }
-        });
-
         /*监听滑动，在需要的地方切换isHook*/
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "onPageSelected",
+        XposedHelpers.findAndHookMethod(CLASS2, classLoader, "onPageSelected",
                 int.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        super.beforeHookedMethod(param);
 
-                int i = (int) param.args[0];
+                        int i = (int) param.args[0];
 
-                if (i == 3) {//不hook
-                    isHook = false;
 
-                    resume();
 
-//                    XposedBridge.log("ishook--->>>"+isHook);
+                        if (i == 3) {//不hook
+                            isHook = false;
 
-                } else {
-                    isHook = true;
-                }
+//                            resume();
 
-                if (i == 1) {
+
+
+                        } else {
+                            isHook = true;
+                        }
+
+                        if (isHook) {
 //                    initRecyclerView();
 
-                    initView();//初始化view
+                            loader = classLoader;
 
-                    loader = lpparam.classLoader;
+                            initView();//初始化view
 
-                }
-            }
-        });
+                        }
 
-
+                        XposedBridge.log("ishook--->>>"+isHook);
+                    }
+                });
     }
 
     /**
@@ -179,8 +200,11 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
      */
     private void initView() {
 
+        refresh=false;
 
         decorView.removeView(linearLayout);
+
+//        XposedBridge.log("activity--->>"+activity);
 
         linearLayout = new LinearLayout(activity);
         linearLayout.setOrientation(LinearLayout.VERTICAL);//垂直布局
@@ -202,6 +226,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
 
         if (activity != null && decorView != null && isHook) {
+
+
 
             swipeRefreshLayout = new SwipeRefreshLayout(activity);
             RelativeLayout.LayoutParams params1 = new
@@ -283,6 +309,7 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
             public void run() {
                 super.run();
                 openFileAndGetDate();
+                XposedBridge.log("hid---->>data");
 
             }
         }.start();
@@ -411,6 +438,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
             editText.setHint("搜索漫画&作者");
 
+
+
             /*监听输入*/
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -420,6 +449,8 @@ public class HideFragmentHook extends BaseHook implements IXposedHookLoadPackage
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    XposedBridge.log("hid---->>"+s);
 
                     if (TextUtils.isEmpty(s) && adapter != null) {
 

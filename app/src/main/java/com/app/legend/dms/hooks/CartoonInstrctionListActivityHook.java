@@ -1,6 +1,7 @@
 package com.app.legend.dms.hooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.app.legend.dms.utils.Conf;
@@ -22,11 +23,32 @@ public class CartoonInstrctionListActivityHook extends BaseHook implements IXpos
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
-        if (!lpparam.packageName.equals(Conf.PACKAGE)){
-            return;
+        if (lpparam.packageName.equals(Conf.PACKAGE)){
+
+
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+
+                    Context context= (Context) param.args[0];
+
+                    classLoader=context.getClassLoader();
+
+                    XposedBridge.log("class--->>>获取成功");
+
+                    init(classLoader);
+
+                }
+            });
+
         }
 
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "initData", new XC_MethodHook() {
+    }
+
+    @Override
+    protected void init(ClassLoader classLoader) {
+        XposedHelpers.findAndHookMethod(CLASS2, classLoader, "initData", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -34,14 +56,14 @@ public class CartoonInstrctionListActivityHook extends BaseHook implements IXpos
             }
         });
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "onReceiveData",String.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "onReceiveData",String.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
 
                 if (activity!=null){
 
-                   XposedHelpers.setIntField(activity,"isLock",-1);
+                    XposedHelpers.setIntField(activity,"isLock",-1);
 
                 }
             }
@@ -57,7 +79,5 @@ public class CartoonInstrctionListActivityHook extends BaseHook implements IXpos
 
             }
         });
-
-
     }
 }

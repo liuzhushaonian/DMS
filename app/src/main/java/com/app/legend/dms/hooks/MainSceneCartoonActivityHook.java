@@ -2,6 +2,7 @@ package com.app.legend.dms.hooks;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.view.ViewPager;
 
 import com.app.legend.dms.utils.Conf;
@@ -27,14 +28,42 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
     private static final String CLASS3="com.dmzj.manhua.ui.home.MainSceneCartoonActivity$MyAdapter";
 
+    private Activity activity;
+
+    private HideFragmentHook fragmentHook;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!lpparam.packageName.equals(Conf.PACKAGE)){
-            return;
+
+        if (lpparam.packageName.equals(Conf.PACKAGE)){
+
+
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+
+                    Context context= (Context) param.args[0];
+
+                    classLoader=context.getClassLoader();
+
+                    XposedBridge.log("class--->>>获取成功");
+
+                    init(classLoader);
+
+
+
+                }
+            });
+
         }
+
+    }
+
+    @Override
+    protected void init(ClassLoader classLoader) {
         /*添加封印界面*/
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "getNaviItem", int.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "getNaviItem", int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -46,7 +75,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             }
         });
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "getCount",new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "getCount",new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -55,10 +84,10 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
         });
 
         /* 将游戏图标去掉
-        * 仔细想过了，还是不去掉，我的目的不是断大妈财路
-        *
-        * */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "generateMainLayout", new XC_MethodHook() {
+         * 仔细想过了，还是不去掉，我的目的不是断大妈财路
+         *
+         * */
+        XposedHelpers.findAndHookMethod(CLASS2, classLoader, "generateMainLayout", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -73,11 +102,23 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             }
         });
 
+        XposedHelpers.findAndHookMethod(CLASS2, classLoader, "initData", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+
+                activity= (Activity) param.thisObject;
+
+            }
+        });
+
 
         /*替换原有的获取操作，当然是在入参为1的时候替换，其他时候不动*/
-        XposedHelpers.findAndHookMethod(CLASS3, lpparam.classLoader, "getItem", int.class, new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(CLASS3, classLoader, "getItem", int.class, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+
+
 
                 int i= (int) param.args[0];//获取入参
 
@@ -85,17 +126,29 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 
                     Object o=null;
 
+                    if (fragmentHook==null) {
+
+                        fragmentHook = new HideFragmentHook();
+
+                        fragmentHook.start(classLoader, activity);
+                    }
+
                     try {
-                        Class<?> clazz=lpparam.classLoader.loadClass("com.dmzj.manhua.ui.uifragment.CartoonClassifyFragment");
+                        Class<?> clazz=classLoader.loadClass("com.dmzj.manhua.ui.uifragment.CartoonClassifyFragment");
 
                         o=clazz.newInstance();
 
-                       XposedHelpers.callMethod(o,"analysisData","pp");
+//                        XposedBridge.log("dddd----->>"+o.toString());
+//
+//                        XposedHelpers.callMethod(o,"setStepActivity",activity);
+//
+                        XposedHelpers.callMethod(o,"analysisData","pp");
 
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
 
+//                    return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
                     return o;
                 }else if (i>1){//从第2个页面之后的页面，入参都要减1
 
@@ -111,7 +164,7 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
         });
 
         /*将返回改为6*/
-        XposedHelpers.findAndHookMethod(CLASS3, lpparam.classLoader, "getCount", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS3, classLoader, "getCount", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -121,23 +174,23 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
             }
         });
 
-        //禁止弹出强制升级的窗口
-        XposedHelpers.findAndHookMethod("com.dmzj.manhua.helper.AppUpDataHelper", lpparam.classLoader, "onVersionDetached", JSONObject.class,
-                Activity.class, Class.class, boolean.class, boolean.class, new XC_MethodReplacement() {
-                    @Override
-                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-
-                        XposedBridge.log("release--->>阻止升级弹窗！");
-
-                        return null;
-                    }
-                });
+//        //禁止弹出强制升级的窗口
+//        XposedHelpers.findAndHookMethod("com.dmzj.manhua.helper.AppUpDataHelper", classLoader, "onVersionDetached", JSONObject.class,
+//                Activity.class, Class.class, boolean.class, boolean.class, new XC_MethodReplacement() {
+//                    @Override
+//                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+//
+//                        XposedBridge.log("release--->>阻止升级弹窗！");
+//
+//                        return null;
+//                    }
+//                });
 
 
         /**
          * 设置viewpager的limit，避免不显示
          */
-        XposedHelpers.findAndHookMethod(CLASS2, lpparam.classLoader, "initData", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS2, classLoader, "initData", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -149,8 +202,6 @@ public class MainSceneCartoonActivityHook extends BaseHook implements IXposedHoo
 //                XposedBridge.log("设置成功！！！！！！！");
             }
         });
-
-
     }
 
 

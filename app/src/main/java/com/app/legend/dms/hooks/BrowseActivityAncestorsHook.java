@@ -26,20 +26,39 @@ public class BrowseActivityAncestorsHook extends BaseHook implements IXposedHook
 
     private Activity activity;
 
-
-
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
+        if (lpparam.packageName.equals(Conf.PACKAGE)){
 
-        if (!lpparam.packageName.equals(Conf.PACKAGE)){
-            return;
+
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+
+                    Context context= (Context) param.args[0];
+
+                    classLoader=context.getClassLoader();
+
+                    XposedBridge.log("class--->>>获取成功");
+
+                    init(classLoader);
+
+                }
+            });
+
         }
 
+    }
+
+
+    @Override
+    protected void init(ClassLoader classLoader) {
         /**
          * 偏移底部信息，避免曲屏圆角而无法看到
          */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "publicFindViews", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "publicFindViews", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -61,64 +80,62 @@ public class BrowseActivityAncestorsHook extends BaseHook implements IXposedHook
             }
         });
 
-        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.ShareActivity", lpparam.classLoader,
+        XposedHelpers.findAndHookMethod("com.dmzj.manhua.ui.ShareActivity", classLoader,
                 "img_share_save_album", new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    @Override
+                    protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 
-                if (activity==null){
+                        if (activity==null){
 
-                    XposedBridge.log("release--->>the activity is null");
+                            XposedBridge.log("release--->>the activity is null");
 
-                    return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
-                }
-
-
-                Object currentModel=XposedHelpers.getObjectField(activity,"currentModel");
-
-                if (currentModel!=null){
-
-                    Object local=XposedHelpers.getObjectField(currentModel,"localWrapper");
-
-                    if (local!=null){//只要有本地图片，则不运行官方方法，避免FC
-
-                        String file= (String) XposedHelpers.getObjectField(local,"file");//zip文件
-
-                        int offsetLocal=XposedHelpers.getIntField(currentModel,"offset_local");
-
-                        String oneName=offsetLocal+".jpg";
-
-                        String name="dmzj-"+System.currentTimeMillis()+".jpg";
-
-                        String savePath= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath()+"/"+name;
-
-                        XposedBridge.log("save---->>"+savePath);
+                            return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
+                        }
 
 
-                        boolean r= ZipUtils.fixSaveLocalImage(file,oneName,savePath,AndroidAppHelper.currentApplication());
+                        Object currentModel=XposedHelpers.getObjectField(activity,"currentModel");
 
-                        if (r){
+                        if (currentModel!=null){
 
-                            Toast.makeText(activity, "release修复，图片已保存-->"+savePath, Toast.LENGTH_SHORT).show();
+                            Object local=XposedHelpers.getObjectField(currentModel,"localWrapper");
 
-                        }else {
+                            if (local!=null){//只要有本地图片，则不运行官方方法，避免FC
 
-                            Toast.makeText(activity, "图片没能保存成功，但是release已阻止大妈闪退，请在日志里查找不能保存成功的原因", Toast.LENGTH_SHORT).show();
+                                String file= (String) XposedHelpers.getObjectField(local,"file");//zip文件
+
+                                int offsetLocal=XposedHelpers.getIntField(currentModel,"offset_local");
+
+                                String oneName=offsetLocal+".jpg";
+
+                                String name="dmzj-"+System.currentTimeMillis()+".jpg";
+
+                                String savePath= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath()+"/"+name;
+
+                                XposedBridge.log("save---->>"+savePath);
+
+
+                                boolean r= ZipUtils.fixSaveLocalImage(file,oneName,savePath,AndroidAppHelper.currentApplication());
+
+                                if (r){
+
+                                    Toast.makeText(activity, "release修复，图片已保存-->"+savePath, Toast.LENGTH_SHORT).show();
+
+                                }else {
+
+                                    Toast.makeText(activity, "图片没能保存成功，但是release已阻止大妈闪退，请在日志里查找不能保存成功的原因", Toast.LENGTH_SHORT).show();
+
+                                }
+
+                                return null;
+
+                            }
 
                         }
 
-                        return null;
 
+                        return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
                     }
-
-                }
-
-
-                return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
-            }
-        });
-
-
+                });
     }
 
 

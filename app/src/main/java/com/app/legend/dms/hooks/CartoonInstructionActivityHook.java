@@ -3,6 +3,7 @@ package com.app.legend.dms.hooks;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AndroidAppHelper;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -68,15 +69,36 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
     private String status="";
     private String letter="";
 
-
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
-        if (!lpparam.packageName.equals(Conf.PACKAGE)){
-            return;
+        if (lpparam.packageName.equals(Conf.PACKAGE)){
+
+
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+
+                    Context context= (Context) param.args[0];
+
+                    classLoader=context.getClassLoader();
+
+                    XposedBridge.log("class--->>>获取成功");
+
+                    init(classLoader);
+
+                }
+            });
+
         }
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "initData", new XC_MethodHook() {
+    }
+
+
+    @Override
+    protected void init(ClassLoader classLoader) {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "initData", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -155,7 +177,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         });
 
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "onResume", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "onResume", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -176,7 +198,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
          *
          */
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "refresh", boolean.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "refresh", boolean.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -185,7 +207,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
         });
 
 
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "refresh", boolean.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "refresh", boolean.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -228,7 +250,6 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
             }
         });
-
     }
 
 

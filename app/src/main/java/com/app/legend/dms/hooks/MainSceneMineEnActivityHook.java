@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import okhttp3.Call;
@@ -29,22 +30,40 @@ import okhttp3.Response;
 public class MainSceneMineEnActivityHook extends BaseHook implements IXposedHookLoadPackage {
 
     private static final String CLASS="com.dmzj.manhua.ui.home.MainSceneMineEnActivity";
-
-
-
     private Activity activity;
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
 
-        if (!lpparam.packageName.equals(Conf.PACKAGE)){
-            return;
+        if (lpparam.packageName.equals(Conf.PACKAGE)){
+
+
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context.class, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+
+                    Context context= (Context) param.args[0];
+
+                    classLoader=context.getClassLoader();
+
+                    XposedBridge.log("class--->>>获取成功");
+
+                    init(classLoader);
+
+                }
+            });
+
         }
 
+    }
+
+    @Override
+    protected void init(ClassLoader classLoader) {
         /**
          * findviewbyid，初始化控件的时候
          */
-        XposedHelpers.findAndHookMethod(CLASS, lpparam.classLoader, "findViews", new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(CLASS, classLoader, "findViews", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
@@ -94,8 +113,6 @@ public class MainSceneMineEnActivityHook extends BaseHook implements IXposedHook
 
             }
         });
-
-
     }
 
 
