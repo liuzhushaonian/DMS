@@ -190,7 +190,7 @@ public class HideFragmentHook extends BaseHook{
 
                         }
 
-                        XposedBridge.log("ishook--->>>"+isHook);
+//                        XposedBridge.log("ishook--->>>"+isHook);
                     }
                 });
     }
@@ -309,7 +309,7 @@ public class HideFragmentHook extends BaseHook{
             public void run() {
                 super.run();
                 openFileAndGetDate();
-                XposedBridge.log("hid---->>data");
+//                XposedBridge.log("hid---->>data");
 
             }
         }.start();
@@ -450,7 +450,7 @@ public class HideFragmentHook extends BaseHook{
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                    XposedBridge.log("hid---->>"+s);
+//                    XposedBridge.log("hid---->>"+s);
 
                     if (TextUtils.isEmpty(s) && adapter != null) {
 

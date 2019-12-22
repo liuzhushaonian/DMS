@@ -84,7 +84,7 @@ public class CartoonInstructionActivityHook extends BaseHook implements IXposedH
 
                     classLoader=context.getClassLoader();
 
-                    XposedBridge.log("class--->>>获取成功");
+//                    XposedBridge.log("class--->>>获取成功");
 
                     init(classLoader);
 

@@ -47,7 +47,7 @@ public class MainSceneMineEnActivityHook extends BaseHook implements IXposedHook
 
                     classLoader=context.getClassLoader();
 
-                    XposedBridge.log("class--->>>获取成功");
+//                    XposedBridge.log("class--->>>获取成功");
 
                     init(classLoader);
 
